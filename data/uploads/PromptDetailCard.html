@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业设计稿示例 (优化版 V2)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8fafc; /* Lighter gray for a cleaner look */
+            font-family: 'Inter', 'PingFang SC', 'Helvetica', sans-serif;
+            line-height: 1.6; /* Slightly increased line-height for better readability */
+            color: #334155; /* Default text color - Slate 700 */
+        }
+        .code-block {
+            background-color: #1e293b; /* Darker blue-gray - Slate 800 */
+            color: #cbd5e1; /* Lighter gray text - Slate 300 */
+            font-family: monospace;
+            padding: 1rem;
+            border-radius: 0.5rem; /* Slightly larger border radius */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        }
+        .icon-text { display: inline-flex; align-items: center; gap: 0.375rem; /* Increased gap slightly */ }
+        .icon-text svg { flex-shrink: 0; }
+
+        /* Tooltip styles (minor adjustments) */
+        .tooltip-container { position: relative; display: inline-flex; align-items: center; }
+        .tooltip-trigger { cursor: help; }
+        .tooltip-content {
+            position: absolute; bottom: 100%; left: 50%;
+            transform: translateX(-50%) translateY(-8px); /* Adjusted Y offset */
+            background-color: #1e293b; /* Slate 800 for consistency */
+            color: #f1f5f9; /* Slate 100 */
+            padding: 0.5rem 0.75rem; /* Adjusted padding */
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            white-space: normal;
+            width: max-content;
+            max-width: 280px; /* Slightly wider max-width */
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+            z-index: 50; /* Ensure tooltip is above other elements */
+            pointer-events: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip-container:hover .tooltip-content { opacity: 1; visibility: visible; }
+        .tooltip-content::after {
+            content: ''; position: absolute; top: 100%; left: 50%;
+            margin-left: -5px; border-width: 5px; border-style: solid;
+            border-color: #1e293b transparent transparent transparent; /* Match background */
+        }
+
+        .icon-button {
+             padding: 0.375rem; /* Slightly more padding */
+             border-radius: 0.375rem; /* Consistent rounding */
+             line-height: 1;
+             transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+             color: #64748b; /* Slate 500 */
+        }
+        .icon-button:hover {
+            color: #4f46e5; /* Indigo 600 - kept for primary action color */
+            background-color: #eef2ff; /* Indigo 50 */
+        }
+        .icon-button svg {
+            width: 1.125rem; /* Slightly larger icons */
+            height: 1.125rem;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-none {
+            display: block;
+            -webkit-line-clamp: unset;
+        }
+
+        /* Enhanced card styles */
+        .card {
+            background-color: white;
+            border-radius: 0.75rem; /* More pronounced rounding */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); /* Softer shadow */
+            transition: box-shadow 0.2s ease-in-out;
+            overflow: hidden; /* Ensure child elements respect border radius */
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.07); /* Enhanced hover shadow */
+        }
+        .card-header {
+            background-color: #f8fafc; /* Slate 50 */
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0; /* Slate 200 */
+            font-weight: 600;
+            color: #1e293b; /* Slate 800 */
+        }
+        .card-content {
+            padding: 1.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.75rem; /* 12px */
+            text-transform: uppercase; /* Added for emphasis */
+            letter-spacing: 0.025em; /* Added for style */
+        }
+
+        .ai-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem; /* Adjusted padding for better touch targets */
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid transparent; /* Base border */
+        }
+        .ai-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Enhanced shadow */
+        }
+
+        /* Custom color bar for "You might like" cards */
+        .you-might-like-card .color-bar {
+            height: 0.25rem; /* 4px */
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+    <div class="container mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8" id="app">
+        <main class="w-full lg:w-2/3 space-y-6 card">
+            <section class="p-6 pb-0">
+                 <div class="flex items-center">
+                     <div class="inline-flex items-center bg-amber-400 text-amber-900 px-3 py-1 rounded-l-md shadow-sm">
+                         <span class="font-semibold text-xs tracking-wide">No.10</span>
+                     </div>
+                     <div class="inline-flex items-center bg-slate-800 text-white px-4 py-1 rounded-r-md shadow-sm">
+                         <span class="font-medium text-xs tracking-wide">豆瓣图书 Top250</span>
+                     </div>
+                 </div>
+            </section>
+
+            <header class="p-6">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                     <h1 class="text-3xl font-bold text-slate-900 flex-shrink-0">实现新功能</h1>
+                     <nav class="flex flex-wrap gap-2 mt-1 sm:mt-0 sm:justify-end">
+                         <span class="badge bg-emerald-100 text-emerald-700">AGRICULTURE</span>
+                         <span class="badge bg-sky-100 text-sky-700">FLORA & FAUNA</span>
+                         <span class="badge bg-orange-100 text-orange-700">HOW-TO</span>
+                     </nav>
+                </div>
+            </header>
+
+            <div class="px-6 py-4 border-y border-slate-200">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm text-slate-600 gap-4">
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <div class="flex items-center icon-text">
+                            <img src="https://placehold.co/24x24/e0e7ff/4f46e5?text=N" alt="作者头像" class="w-6 h-6 rounded-full mr-2 shadow-sm">
+                            <span class="font-medium text-slate-800">nashoba Ω</span>
+                        </div>
+                        <span class="text-slate-300 hidden sm:inline">•</span>
+                        <div class="flex items-center icon-text text-xs text-slate-500">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            <span>7 次使用</span>
+                        </div>
+                         <span class="text-slate-300 hidden sm:inline">•</span>
+                         <div class="flex items-center icon-text text-xs text-slate-500">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+                            <span>6 次收藏</span>
+                        </div>
+                         <span class="text-slate-300 hidden sm:inline">•</span>
+                         <div class="flex items-center icon-text text-xs text-pink-600">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                            <span>67 个赞</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center flex-shrink-0 mt-2 sm:mt-0">
+                        <span class="font-bold text-xl text-slate-800 mr-1.5">9.3</span>
+                        <div class="star-rating text-amber-400">
+                            <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            </div>
+                        <div class="tooltip-container ml-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-600 tooltip-trigger" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                             <div class="tooltip-content">
+                                <div class="font-semibold mb-1.5 text-sm">豆瓣评分</div>
+                                <div class="space-y-1">
+                                    <div class="flex items-center text-xs">
+                                        <span class="inline-block w-10">5 星</span>
+                                        <div class="h-2 bg-slate-200 rounded-full flex-grow mx-1.5"><div class="h-2 bg-amber-400 rounded-full" style="width: 74.8%"></div></div>
+                                        <span class="inline-block w-12 text-right text-slate-400">74.8%</span>
+                                    </div>
+                                    <div class="flex items-center text-xs">
+                                        <span class="inline-block w-10">4 星</span>
+                                        <div class="h-2 bg-slate-200 rounded-full flex-grow mx-1.5"><div class="h-2 bg-amber-400 rounded-full" style="width: 21.0%"></div></div>
+                                        <span class="inline-block w-12 text-right text-slate-400">21.0%</span>
+                                    </div>
+                                    <div class="flex items-center text-xs">
+                                        <span class="inline-block w-10">3 星</span>
+                                        <div class="h-2 bg-slate-200 rounded-full flex-grow mx-1.5"><div class="h-2 bg-amber-400 rounded-full" style="width: 3.8%"></div></div>
+                                        <span class="inline-block w-12 text-right text-slate-400">3.8%</span>
+                                    </div>
+                                    <div class="flex items-center text-xs">
+                                        <span class="inline-block w-10">2 星</span>
+                                        <div class="h-2 bg-slate-200 rounded-full flex-grow mx-1.5"><div class="h-2 bg-amber-400 rounded-full" style="width: 0.2%"></div></div>
+                                        <span class="inline-block w-12 text-right text-slate-400">0.2%</span>
+                                    </div>
+                                    <div class="flex items-center text-xs">
+                                        <span class="inline-block w-10">1 星</span>
+                                        <div class="h-2 bg-slate-200 rounded-full flex-grow mx-1.5"><div class="h-2 bg-amber-400 rounded-full" style="width: 0.2%"></div></div>
+                                        <span class="inline-block w-12 text-right text-slate-400">0.2%</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-xs text-slate-500">172664人评分</div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="p-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-semibold text-slate-800 flex items-center icon-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        基础模板
+                        <div class="tooltip-container ml-1.5">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-600 tooltip-trigger" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                             <div class="tooltip-content">使用 {placeholder} 语法进行参数替换。<br>在右侧填写参数值。</div>
+                        </div>
+                    </h2>
+                    <div class="flex gap-2">
+                         <button class="icon-button" aria-label="编辑" title="编辑">
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                         </button>
+                          <button class="icon-button" aria-label="删除" title="删除">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          </button>
+                          <button class="icon-button" aria-label="复制模板" title="复制模板">
+                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                          </button>
+                    </div>
+                </div>
+                <div class="code-block text-sm"> 实现如下功能：
+首先总结当前现状，然后制作完整的修改计划，每次修改完成一次都提交一次代码 git，并总结当前情况，然后再次执行下一次修改，使用 thinking，use context 7
+                </div>
+            </section>
+
+            <section class="p-6">
+                <div class="flex justify-between items-center mb-3">
+                     <h2 class="text-lg font-semibold text-slate-800 flex items-center icon-text">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                        生成的提示
+                        <div class="tooltip-container ml-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-600 tooltip-trigger" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <div class="tooltip-content">并非所有参数都已填写</div>
+                        </div>
+                    </h2>
+                     <button class="icon-button" aria-label="复制结果" title="复制结果">
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                     </button>
+                </div>
+                 <div class="code-block text-sm">
+实现如下功能：
+首先总结当前现状，然后制作完整的修改计划，每次修改完成一次都提交一次代码 git，并总结当前情况，然后再次执行下一次修改，使用 thinking，use context 7
+                 </div>
+            </section>
+
+            <section class="p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-16 h-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500"></div>
+                    <h2 class="text-lg font-semibold text-slate-800 ml-3">你可能也喜欢</h2>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="you-might-like-card card p-0 text-center group relative cursor-pointer">
+                        <div class="color-bar" style="background-color: #FAD587;"></div>
+                        <div class="p-4 pt-5">
+                            <p class="text-sm font-medium text-slate-700 group-hover:text-indigo-600 truncate mb-1 transition-colors">finalPromptCode</p>
+                            <p class="text-xs text-slate-500">来自 eluosi</p>
+                        </div>
+                    </div>
+                     <div class="you-might-like-card card p-0 text-center group relative cursor-pointer">
+                        <div class="color-bar" style="background-color: #F6C3A0;"></div>
+                         <div class="p-4 pt-5">
+                            <p class="text-sm font-medium text-slate-700 group-hover:text-indigo-600 truncate mb-1 transition-colors">另一个很棒的提示</p>
+                            <p class="text-xs text-slate-500">来自 用户X</p>
+                        </div>
+                    </div>
+                     <div class="you-might-like-card card p-0 text-center group relative cursor-pointer">
+                        <div class="color-bar" style="background-color: #FFAB91;"></div>
+                        <div class="p-4 pt-5">
+                            <p class="text-sm font-medium text-slate-700 group-hover:text-indigo-600 truncate mb-1 transition-colors">代码生成器Pro</p>
+                            <p class="text-xs text-slate-500">来自 用户Y</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <aside class="w-full lg:w-1/3 space-y-6">
+            <div class="card">
+                <div class="card-header">参数</div>
+                <div class="card-content">
+                    <label for="parameters" class="block text-sm font-medium text-slate-700 mb-1.5">需要实现的功能</label>
+                    <input
+                        type="text"
+                        id="parameters"
+                        name="parameters"
+                        placeholder="输入需要实现的功能..."
+                        class="w-full px-3.5 py-2.5 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-slate-400 transition"
+                    >
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">外部工具</div>
+                <div class="card-content">
+                    <div class="flex flex-wrap gap-3">
+                        <a href="#" class="ai-button bg-green-50 text-green-700 border-green-200 hover:bg-green-100 hover:border-green-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 opacity-80"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                            ChatGPT
+                        </a>
+                        <a href="#" class="ai-button bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 hover:border-purple-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 opacity-80"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                            Claude
+                        </a>
+                        <a href="#" class="ai-button bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:border-amber-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 opacity-80"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                            Gemini
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="flex items-center">
+                            <img src="https://placehold.co/48x48/c7d2fe/3730a3?text=N%CE%A9" alt="创作者头像" class="w-12 h-12 rounded-full mr-3.5 shadow-md">
+                            <div>
+                                <span class="font-semibold text-slate-800 block text-base">nashoba Ω</span>
+                                <span class="text-xs text-slate-500 block">@nashoba</span>
+                            </div>
+                        </div>
+                        <button
+                            class="text-sm bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-150 font-medium shadow-sm hover:shadow-md flex-shrink-0"
+                        >
+                            关注
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs text-slate-600 mb-5 pt-5 border-t border-slate-100">
+                        <div><span class="block text-lg font-bold text-slate-800">40</span>总使用</div>
+                        <div><span class="block text-lg font-bold text-slate-800">7</span>关注者</div>
+                        <div><span class="block text-lg font-bold text-slate-800">310</span>点赞</div>
+                        <div><span class="block text-lg font-bold text-slate-800">5</span>平均评分</div>
+                    </div>
+
+                    <div class="text-sm text-slate-700 mb-5 space-y-1.5 leading-relaxed pt-5 border-t border-slate-100">
+                        <p id="creator-bio" class="line-clamp-2">AI 艺术家 信息技术之神 创意天才 影子巫师金钱帮 ---+-- 我们热爱施法 *~~ 麦芽酒与葡萄酒爱好者 *当前等级 8 H ... Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.</p>
+                        <button onclick="toggleBio()" id="read-more-btn" class="font-medium text-indigo-600 hover:text-indigo-700 text-sm transition-colors">阅读更多</button>
+                    </div>
+
+                    <div class="flex gap-4 text-slate-400 pt-5 border-t border-slate-100">
+                        <a href="#" class="hover:text-indigo-600 transition duration-150" title="X / Twitter"> <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg> </a>
+                        <a href="#" class="hover:text-indigo-600 transition duration-150" title="GitHub"> <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.026 2.747-1.026.546 1.379.201 2.397.098 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" /></svg> </a>
+                        <a href="#" class="hover:text-indigo-600 transition duration-150" title="个人网站"> <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg> </a>
+                        <a href="#" class="hover:text-indigo-600 transition duration-150" title="Instagram">
+                           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 16 16"> <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.703.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.598-.919c-.11-.282-.24-.705-.275-1.486-.038-.843-.046-1.095-.046-3.231s.008-2.389.046-3.232c.035-.78.166-1.204.275-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.843-.038 1.096-.047 3.232-.047zM8 4.908a3.092 3.092 0 1 0 0 6.184 3.092 3.092 0 0 0 0-6.184zm0 5.076a1.984 1.984 0 1 1 0-3.968 1.984 1.984 0 0 1 0 3.968zm4.268-5.343a.766.766 0 1 0 0-1.531.766.766 0 0 0 0 1.531z"/> </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Function to toggle creator bio visibility
+            window.toggleBio = function() {
+                const bio = document.getElementById('creator-bio');
+                const btn = document.getElementById('read-more-btn');
+                if (bio.classList.contains('line-clamp-2')) {
+                    bio.classList.remove('line-clamp-2');
+                    bio.classList.add('line-clamp-none');
+                    btn.textContent = '收起'; // Read less
+                } else {
+                    bio.classList.remove('line-clamp-none');
+                    bio.classList.add('line-clamp-2');
+                    btn.textContent = '阅读更多'; // Read more
+                }
+            }
+
+            // Simple star rating display (can be expanded)
+            const starRatingContainers = document.querySelectorAll('.star-rating');
+            starRatingContainers.forEach(container => {
+                const score = parseFloat(container.previousElementSibling.textContent); // Get score from "9.3"
+                if (!isNaN(score)) {
+                    const fullStars = Math.floor(score / 2); // Assuming a 10-point scale for 5 stars
+                    const halfStar = (score / 2) % 1 >= 0.5;
+                    let starsHTML = '';
+                    for (let i = 0; i < 5; i++) {
+                        if (i < fullStars) {
+                            starsHTML += `<svg class="w-4 h-4 inline-block text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>`;
+                        } else if (i === fullStars && halfStar) {
+                            starsHTML += `<svg class="w-4 h-4 inline-block text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292zM10 12.585l1.723 1.252-.329-1.999.001-.003.003-.006 1.453-1.056-2.007-.292-.007-.001L10 8.533l-.844 1.947-.002.004-.005.001-2.007.292 1.453 1.056.003.002.001.004-.329 1.999L10 12.585z"></path></svg>`; // Basic half star (full star with different path or clip-path for true half)
+                        } else {
+                            starsHTML += `<svg class="w-4 h-4 inline-block text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>`;
+                        }
+                    }
+                    container.innerHTML = starsHTML;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

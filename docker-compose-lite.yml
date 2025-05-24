@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # HTML Card Viewer 应用（SQLite版本）
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_TYPE=sqlite
+      - DB_PATH=/app/db/htmlviewer.db
+      - UPLOAD_DIR=/app/uploads
+      - PORT=8080
+      - GIN_MODE=release
+    volumes:
+      - ./data/uploads:/app/uploads
+      - ./data/db:/app/db
+      - ./data/backups:/app/backups
+    restart: unless-stopped
+
+  # 文件管理工具（可选）
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    ports:
+      - "8081:80"
+    volumes:
+      - ./data:/srv
+    environment:
+      - FB_DATABASE=/database.db
+      - FB_ROOT=/srv
+    restart: unless-stopped
+    profiles:
+      - tools

@@ -3,7 +3,23 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-export interface HtmlFile {  id?: string;  filename: string;  path: string;  title?: string;  uploadDate: Date;  lastModified?: Date;  category?: string;  tags?: string[];  description?: string;  author?: string;  version?: string;  fileSize?: number;  thumbnailLoaded?: boolean;  thumbnailState?: 'loading' | 'loaded' | 'error';  hasHistory?: boolean;}
+export interface HtmlFile {
+  id?: string;
+  filename: string;
+  path: string;
+  title?: string;
+  uploadDate: Date;
+  lastModified?: Date;
+  category?: string;
+  tags?: string[];
+  description?: string;
+  author?: string;
+  version?: string;
+  fileSize?: number;
+  thumbnailLoaded?: boolean;
+  thumbnailState?: 'loading' | 'loaded' | 'error';
+  hasHistory?: boolean;
+}
 
 export interface Category {
   id: string;
@@ -16,7 +32,7 @@ export interface Category {
   providedIn: 'root'
 })
 export class HtmlFileService {
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = '/api';
   private files: HtmlFile[] = [];
 
   // Predefined categories
@@ -33,9 +49,9 @@ export class HtmlFileService {
   ];
 
   constructor(private http: HttpClient) {
-    // Load file list and categories from local storage
-    this.loadFromLocalStorage();
-    this.loadCategoriesFromLocalStorage();
+    // Initialize files and categories from server
+    this.refreshFilesFromServer();
+    this.refreshCategoriesFromServer();
   }
 
   private loadFromLocalStorage(): void {
@@ -131,6 +147,11 @@ export class HtmlFileService {
   uploadFile(file: File, category: string = 'other', tags: string[] = [], description?: string): Observable<any> {
     const formData = new FormData();
     formData.append('htmlFile', file);
+    formData.append('category', category);
+    formData.append('tags', tags.join(','));
+    if (description) {
+      formData.append('description', description);
+    }
 
     // Set request headers
     const headers = new HttpHeaders();
@@ -140,19 +161,8 @@ export class HtmlFileService {
       .pipe(
         tap((response: any) => {
           console.log('Upload response:', response);
-          // Add file to list
-          const newFile: HtmlFile = {
-            filename: response.filename,
-            path: response.path,
-            title: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension for title
-            uploadDate: new Date(),
-            category: category,
-            tags: tags,
-            description: description
-          };
-
-          this.files.unshift(newFile); // Add to beginning of list
-          this.saveToLocalStorage();
+          // Refresh files from server to get updated list
+          this.refreshFilesFromServer();
         }),
         catchError(this.handleError)
       );
@@ -170,12 +180,18 @@ export class HtmlFileService {
   }
 
   // Delete HTML file
-  deleteFile(filename: string): void {
-    const index = this.files.findIndex(file => file.filename === filename);
-    if (index !== -1) {
-      this.files.splice(index, 1);
-      this.saveToLocalStorage();
-    }
+  deleteFile(filename: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/files/${filename}`)
+      .pipe(
+        tap(() => {
+          // Remove from local array
+          const index = this.files.findIndex(file => file.filename === filename);
+          if (index !== -1) {
+            this.files.splice(index, 1);
+          }
+        }),
+        catchError(this.handleError)
+      );
   }
 
   // Category management methods
@@ -213,7 +229,44 @@ export class HtmlFileService {
     localStorage.setItem('htmlCategories', JSON.stringify(this.categories));
   }
 
-  // Save file list to local storage
+  // Refresh files from server
+  private refreshFilesFromServer(): void {
+    this.http.get<HtmlFile[]>(`${this.apiUrl}/files`)
+      .pipe(catchError(this.handleError))
+      .subscribe({
+        next: (files) => {
+          this.files = files.map(file => ({
+            ...file,
+            uploadDate: new Date(file.uploadDate),
+            tags: file.tags || []
+          }));
+        },
+        error: (error) => {
+          console.error('Failed to load files from server:', error);
+          this.loadFromLocalStorage(); // Fallback to local storage
+        }
+      });
+  }
+
+  // Refresh categories from server
+  private refreshCategoriesFromServer(): void {
+    this.http.get<Category[]>(`${this.apiUrl}/categories`)
+      .pipe(catchError(this.handleError))
+      .subscribe({
+        next: (categories) => {
+          // Merge server categories with defaults
+          const serverCategoryIds = categories.map(cat => cat.id);
+          const defaultCategories = this.categories.filter(cat => !serverCategoryIds.includes(cat.id));
+          this.categories = [...categories, ...defaultCategories];
+        },
+        error: (error) => {
+          console.error('Failed to load categories from server:', error);
+          this.loadCategoriesFromLocalStorage(); // Fallback to local storage
+        }
+      });
+  }
+
+  // Save file list to local storage (backup)
   private saveToLocalStorage(): void {
     localStorage.setItem('htmlFiles', JSON.stringify(this.files));
   }

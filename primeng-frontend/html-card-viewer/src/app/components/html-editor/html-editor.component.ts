@@ -49,28 +49,7 @@ interface FileVersion {
       <!-- Editor Content -->
       <div class="editor-content">
         <div class="editor-sidebar">
-          <div class="sidebar-section">
-            <h3>文件属性</h3>
-            <div class="form-field">
-              <label>标题</label>
-                            <input type="text"                     pInputText                     [(ngModel)]="currentFile!.title"                     placeholder="文件标题">
-            </div>
-            <div class="form-field">
-              <label>描述</label>
-                            <textarea pInputTextarea                        [(ngModel)]="currentFile!.description"                        placeholder="文件描述"                        rows="3">              </textarea>
-            </div>
-            <div class="form-field">
-              <label>作者</label>
-                            <input type="text"                     pInputText                     [(ngModel)]="currentFile!.author"                     placeholder="作者名称">
-            </div>
-            <div class="form-field">
-              <label>当前版本</label>
-                            <input type="text"                     pInputText                     [(ngModel)]="currentFile!.version"                     placeholder="版本号">
-            </div>
-          </div>
-
-          <div class="sidebar-section" *ngIf="versions.length > 0">
-            <h3>最近版本</h3>
+                    <div class="sidebar-section">            <h3>{{ i18n.t('fileProperties') }}</h3>            <div class="form-field">              <label>{{ i18n.t('title') }}</label>                            <input type="text"                     pInputText                     [(ngModel)]="currentFile!.title"                     [placeholder]="i18n.t('fileTitle')">            </div>            <div class="form-field">              <label>{{ i18n.t('description') }}</label>                            <textarea pInputTextarea                        [(ngModel)]="currentFile!.description"                        [placeholder]="i18n.t('fileDescription')"                        rows="3">              </textarea>            </div>            <div class="form-field">              <label>{{ i18n.t('author') }}</label>                            <input type="text"                     pInputText                     [(ngModel)]="currentFile!.author"                     [placeholder]="i18n.t('authorName')">            </div>            <div class="form-field">              <label>{{ i18n.t('currentVersion') }}</label>                            <input type="text"                     pInputText                     [(ngModel)]="currentFile!.version"                     [placeholder]="i18n.t('versionPlaceholder')">            </div>          </div>          <div class="sidebar-section" *ngIf="versions.length > 0">            <h3>{{ i18n.t('recentVersions') }}</h3>
             <div class="version-list">
               <div class="version-item"
                    *ngFor="let version of versions.slice(0, 5)"
@@ -86,125 +65,32 @@ interface FileVersion {
         </div>
 
         <div class="editor-main">
-          <div class="editor-toolbar">
-            <div class="toolbar-left">
-              <span class="editor-title">HTML 编辑器</span>
-              <span class="change-indicator" *ngIf="hasChanges">● 未保存的更改</span>
-            </div>
+                    <div class="editor-toolbar">            <div class="toolbar-left">              <span class="editor-title">{{ i18n.t('htmlEditor') }}</span>              <span class="change-indicator" *ngIf="hasChanges">● {{ i18n.t('unsavedChanges') }}</span>            </div>
             <div class="toolbar-right">
-              <button pButton pRipple
-                      icon="fas fa-undo"
-                      class="p-button-text p-button-sm"
-                      pTooltip="撤销"
-                      (click)="undo()"
-                      [disabled]="!canUndo">
-              </button>
-              <button pButton pRipple
-                      icon="fas fa-redo"
-                      class="p-button-text p-button-sm"
-                      pTooltip="重做"
-                      (click)="redo()"
-                      [disabled]="!canRedo">
-              </button>
+                              <button pButton pRipple                        icon="fas fa-undo"                        class="p-button-text p-button-sm"                        [pTooltip]="i18n.t('undo')"                        (click)="undo()"                        [disabled]="!canUndo">              </button>              <button pButton pRipple                      icon="fas fa-redo"                      class="p-button-text p-button-sm"                      [pTooltip]="i18n.t('redo')"                      (click)="redo()"                      [disabled]="!canRedo">              </button>
             </div>
           </div>
 
           <div class="code-editor">
-            <textarea class="code-textarea"
-                      [(ngModel)]="htmlContent"
-                      (ngModelChange)="onContentChange()"
-                      placeholder="在此输入HTML内容..."
-                      spellcheck="false">
-            </textarea>
+                        <textarea class="code-textarea"                      [(ngModel)]="htmlContent"                      (ngModelChange)="onContentChange()"                      [placeholder]="i18n.t('versionPlaceholder')"                      spellcheck="false">            </textarea>
           </div>
         </div>
       </div>
 
-      <!-- 版本历史对话框 -->
-      <p-dialog header="版本历史"
-                [(visible)]="showVersionHistory"
-                [modal]="true"
-                [style]="{width: '800px'}"
-                [closable]="true">
+            <!-- 版本历史对话框 -->      <p-dialog [header]="i18n.t('versionHistory')"                [(visible)]="showVersionHistory"                [modal]="true"                [style]="{width: '800px'}"                [closable]="true">
         <div class="version-history">
           <div class="version-history-item"
                *ngFor="let version of versions"
                [class.current]="version.id === currentVersionId">
             <div class="version-header">
-              <div class="version-meta">
-                <span class="version-number">版本 {{ version.version }}</span>
-                <span class="version-date">{{ version.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}</span>
-              </div>
-              <div class="version-actions">
-                <button pButton pRipple
-                        label="加载"
-                        icon="fas fa-download"
-                        class="p-button-text p-button-sm"
-                        (click)="loadVersion(version)">
-                </button>
-                <button pButton pRipple
-                        label="删除"
-                        icon="fas fa-trash"
-                        class="p-button-text p-button-sm p-button-danger"
-                        (click)="deleteVersion(version.id)"
-                        [disabled]="version.id === currentVersionId">
-                </button>
-              </div>
+                            <div class="version-meta">                <span class="version-number">{{ i18n.t('versionNumber') }} {{ version.version }}</span>                <span class="version-date">{{ version.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}</span>              </div>              <div class="version-actions">                <button pButton pRipple                        [label]="i18n.t('loadVersion')"                        icon="fas fa-download"                        class="p-button-text p-button-sm"                        (click)="loadVersion(version)">                </button>                <button pButton pRipple                        [label]="i18n.t('deleteVersion')"                        icon="fas fa-trash"                        class="p-button-text p-button-sm p-button-danger"                        (click)="deleteVersion(version.id)"                        [disabled]="version.id === currentVersionId">                </button>              </div>
             </div>
             <div class="version-description">{{ version.description }}</div>
           </div>
         </div>
       </p-dialog>
 
-      <!-- 保存版本对话框 -->
-      <p-dialog header="保存为新版本"
-                [(visible)]="showSaveVersionDialog"
-                [modal]="true"
-                [style]="{width: '500px'}"
-                [closable]="true">
-        <div class="save-version-form">
-          <div class="form-field">
-            <label>版本号</label>
-            <input type="text"
-                   pInputText
-                   [(ngModel)]="newVersionNumber"
-                   placeholder="例如: 1.1.0">
-          </div>
-          <div class="form-field">
-            <label>版本描述</label>
-            <textarea pInputTextarea
-                      [(ngModel)]="newVersionDescription"
-                      placeholder="描述此版本的更改..."
-                      rows="3">
-            </textarea>
-          </div>
-        </div>
-
-        <ng-template pTemplate="footer">
-          <div class="dialog-footer">
-            <button pButton pRipple
-                    label="取消"
-                    icon="fas fa-times"
-                    class="p-button-text"
-                    (click)="showSaveVersionDialog = false">
-            </button>
-            <button pButton pRipple
-                    label="保存版本"
-                    icon="fas fa-code-branch"
-                    class="p-button-primary"
-                    (click)="saveAsVersion()"
-                    [disabled]="!newVersionNumber || !newVersionDescription">
-            </button>
-          </div>
-        </ng-template>
-      </p-dialog>
-
-      <!-- 预览对话框 -->
-      <p-dialog header="HTML 预览"
-                [(visible)]="showPreview"
-                [modal]="true"
-                [style]="{width: '90vw', height: '90vh'}"
-                [closable]="true">
+            <!-- 保存版本对话框 -->      <p-dialog [header]="i18n.t('saveAsVersion')"                [(visible)]="showSaveVersionDialog"                [modal]="true"                [style]="{width: '500px'}"                [closable]="true">        <div class="save-version-form">          <div class="form-field">            <label>{{ i18n.t('versionNumber') }}</label>            <input type="text"                   pInputText                   [(ngModel)]="newVersionNumber"                   [placeholder]="i18n.t('versionPlaceholder')">          </div>          <div class="form-field">            <label>{{ i18n.t('versionDescription') }}</label>            <textarea pInputTextarea                      [(ngModel)]="newVersionDescription"                      [placeholder]="i18n.t('describeChanges')"                      rows="3">            </textarea>          </div>        </div>        <ng-template pTemplate="footer">          <div class="dialog-footer">            <button pButton pRipple                    [label]="i18n.t('cancel')"                    icon="fas fa-times"                    class="p-button-text"                    (click)="showSaveVersionDialog = false">            </button>            <button pButton pRipple                    [label]="i18n.t('saveVersion')"                    icon="fas fa-code-branch"                    class="p-button-primary"                    (click)="saveAsVersion()"                    [disabled]="!newVersionNumber || !newVersionDescription">            </button>          </div>        </ng-template>      </p-dialog>      <!-- 预览对话框 -->      <p-dialog [header]="i18n.t('htmlPreview')"                [(visible)]="showPreview"                [modal]="true"                [style]="{width: '90vw', height: '90vh'}"                [closable]="true">
         <div class="preview-container">
           <iframe [srcdoc]="htmlContent"
                   class="preview-frame"

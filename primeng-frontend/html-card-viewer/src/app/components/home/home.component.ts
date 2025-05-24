@@ -1236,7 +1236,7 @@ export class HomeComponent implements OnInit {
   }
 
   getFileUrl(file: HtmlFile): string {
-    return `http://localhost:8080/uploads/${file.filename}`;
+    return `/uploads/${file.filename}`;
   }
 
   getSafeFileUrl(file: HtmlFile): SafeResourceUrl {
@@ -1484,13 +1484,23 @@ export class HomeComponent implements OnInit {
   }
 
   deleteHtml(file: HtmlFile): void {
-    this.htmlFileService.deleteFile(file.filename);
-    this.messageService.add({
-      severity: 'success',
-      summary: this.i18n.t('success'),
-      detail: this.i18n.t('fileDeleted')
+    this.htmlFileService.deleteFile(file.filename).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: this.i18n.t('success'),
+          detail: this.i18n.t('fileDeleted')
+        });
+        this.loadData();
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.i18n.t('error'),
+          detail: this.i18n.t('uploadError')
+        });
+      }
     });
-    this.loadData();
   }
 
   onDragOver(event: DragEvent): void {

@@ -96,6 +96,24 @@ export interface TranslationKeys {
   versionHistory: string;
   saveAsVersion: string;
   loadingContent: string;
+
+  // Editor specific
+  fileProperties: string;
+  author: string;
+  currentVersion: string;
+  recentVersions: string;
+  versionNumber: string;
+  versionDescription: string;
+  htmlPreview: string;
+  loadVersion: string;
+  deleteVersion: string;
+  saveVersion: string;
+  fileTitle: string;
+  fileDescription: string;
+  authorName: string;
+  versionPlaceholder: string;
+  describeChanges: string;
+  noDescription: string;
 }
 
 const translations: { [key: string]: TranslationKeys } = {
@@ -190,7 +208,25 @@ const translations: { [key: string]: TranslationKeys } = {
     redo: 'Redo',
     versionHistory: 'Version History',
     saveAsVersion: 'Save as Version',
-    loadingContent: 'Loading HTML content...'
+    loadingContent: 'Loading HTML content...',
+
+    // Editor specific
+    fileProperties: 'File Properties',
+    author: 'Author',
+    currentVersion: 'Current Version',
+    recentVersions: 'Recent Versions',
+    versionNumber: 'Version Number',
+    versionDescription: 'Version Description',
+    htmlPreview: 'HTML Preview',
+    loadVersion: 'Load Version',
+    deleteVersion: 'Delete Version',
+    saveVersion: 'Save Version',
+    fileTitle: 'File Title',
+    fileDescription: 'File Description',
+    authorName: 'Author Name',
+    versionPlaceholder: 'Enter version description',
+    describeChanges: 'Describe Changes',
+    noDescription: 'No description provided'
   },
   zh: {
     // Header
@@ -283,7 +319,25 @@ const translations: { [key: string]: TranslationKeys } = {
     redo: '重做',
     versionHistory: '版本历史',
     saveAsVersion: '保存为版本',
-    loadingContent: '正在加载HTML内容...'
+    loadingContent: '正在加载HTML内容...',
+
+    // Editor specific
+    fileProperties: '文件属性',
+    author: '作者',
+    currentVersion: '当前版本',
+    recentVersions: '最近版本',
+    versionNumber: '版本号',
+    versionDescription: '版本描述',
+    htmlPreview: 'HTML预览',
+    loadVersion: '加载版本',
+    deleteVersion: '删除版本',
+    saveVersion: '保存版本',
+    fileTitle: '文件标题',
+    fileDescription: '文件描述',
+    authorName: '作者名称',
+    versionPlaceholder: '输入版本描述',
+    describeChanges: '描述更改',
+    noDescription: '没有描述'
   }
 };
 
