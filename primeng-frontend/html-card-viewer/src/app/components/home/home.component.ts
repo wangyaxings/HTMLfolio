@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';import { CommonModule } from '@angular/common';import { FormsModule } from '@angular/forms';import { Router } from '@angular/router';import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';import { MessageService, ConfirmationService } from 'primeng/api';import { HtmlFileService, HtmlFile, Category } from '../../services/html-file.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { HtmlFileService, HtmlFile, Category } from '../../services/html-file.service';
 import { FileUploadModule, FileUpload } from 'primeng/fileupload';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -92,12 +98,32 @@ interface FileInfo {
             <!-- Enhanced Thumbnail Preview -->
             <div class="file-thumbnail">
               <div class="thumbnail-content">
-                                <!-- Actual thumbnail with enhanced settings -->                <iframe                  [src]="getSafeFileUrl(file)"                  class="thumbnail-frame"                  sandbox="allow-same-origin allow-scripts allow-forms"                  loading="lazy"                  scrolling="no">                </iframe>
+                <!-- Actual thumbnail with enhanced settings -->
+                <iframe
+                  [src]="getSafeFileUrl(file)"
+                  class="thumbnail-frame"
+                  sandbox="allow-same-origin allow-scripts allow-forms"
+                  loading="lazy"
+                  scrolling="no">
+                </iframe>
 
                 <!-- Enhanced overlay with more actions -->
                 <div class="thumbnail-overlay">
                   <div class="overlay-actions">
-                                        <button pButton pRipple                            type="button"                            icon="fas fa-eye"                            class="p-button-text overlay-btn"                            pTooltip="预览文件"                            (click)="viewHtml(file); $event.stopPropagation()">                    </button>                    <button pButton pRipple                            type="button"                            icon="fas fa-edit"                            class="p-button-text overlay-btn"                            pTooltip="编辑信息"                            (click)="editFile(file); $event.stopPropagation()">                    </button>
+                    <button pButton pRipple
+                            type="button"
+                            icon="fas fa-eye"
+                            class="p-button-text overlay-btn"
+                            pTooltip="预览文件"
+                            (click)="viewHtml(file); $event.stopPropagation()">
+                    </button>
+                    <button pButton pRipple
+                            type="button"
+                            icon="fas fa-edit"
+                            class="p-button-text overlay-btn"
+                            pTooltip="编辑文件"
+                            (click)="editFile(file); $event.stopPropagation()">
+                    </button>
                   </div>
                 </div>
               </div>
@@ -145,7 +171,37 @@ interface FileInfo {
                         (click)="navigateToDetails(file)">
                 </button>
 
-                                <div class="secondary-actions">                  <button pButton pRipple                          type="button"                          icon="fas fa-edit"                          class="p-button-text p-button-sm"                          pTooltip="编辑信息"                          (click)="editFile(file); $event.stopPropagation()">                  </button>                  <button pButton pRipple                          type="button"                          icon="fas fa-history"                          class="p-button-text p-button-sm"                          pTooltip="查看历史"                          (click)="viewHistory(file); $event.stopPropagation()"                          *ngIf="file.hasHistory">                  </button>                  <button pButton pRipple                          type="button"                          icon="fas fa-trash"                          class="p-button-text p-button-sm delete-btn"                          pTooltip="删除文件"                          (click)="confirmDelete(file); $event.stopPropagation()">                  </button>                </div>
+                <div class="secondary-actions">
+                  <button pButton pRipple
+                          type="button"
+                          icon="fas fa-edit"
+                          class="p-button-text p-button-sm"
+                          pTooltip="编辑文件"
+                          (click)="editFile(file); $event.stopPropagation()">
+                  </button>
+                  <button pButton pRipple
+                          type="button"
+                          icon="fas fa-info-circle"
+                          class="p-button-text p-button-sm"
+                          pTooltip="编辑信息"
+                          (click)="editFileInfo(file); $event.stopPropagation()">
+                  </button>
+                  <button pButton pRipple
+                          type="button"
+                          icon="fas fa-history"
+                          class="p-button-text p-button-sm"
+                          pTooltip="查看历史"
+                          (click)="viewHistory(file); $event.stopPropagation()"
+                          *ngIf="file.hasHistory">
+                  </button>
+                  <button pButton pRipple
+                          type="button"
+                          icon="fas fa-trash"
+                          class="p-button-text p-button-sm delete-btn"
+                          pTooltip="删除文件"
+                          (click)="confirmDelete(file); $event.stopPropagation()">
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -176,7 +232,33 @@ interface FileInfo {
                 [closable]="true">
         <div class="upload-dialog-content">
           <!-- File Information Display -->
-                    <div class="file-list" *ngIf="fileInfos.length > 0">            <h4>Selected Files ({{ fileInfos.length }})</h4>            <div class="file-info-list">              <div class="file-info-item" *ngFor="let fileInfo of fileInfos; let i = index">                <div class="file-icon">                  <i class="pi pi-file-o"></i>                </div>                <div class="file-details">                  <div class="file-name">{{ fileInfo.name }}</div>                  <div class="file-metadata">                    <span class="file-size">{{ formatFileSize(fileInfo.size) }}</span>                    <span class="file-modified">Modified: {{ formatDate(fileInfo.lastModified) }}</span>                    <span class="file-type">{{ fileInfo.type || 'text/html' }}</span>                  </div>                </div>                <div class="file-actions">                  <button pButton pRipple                          type="button"                          icon="pi pi-eye"                          class="p-button-text p-button-sm"                          pTooltip="预览文件"                          (click)="previewUploadFile(fileInfo)">                  </button>                </div>              </div>            </div>          </div>
+          <div class="file-list" *ngIf="fileInfos.length > 0">
+            <h4>Selected Files ({{ fileInfos.length }})</h4>
+            <div class="file-info-list">
+              <div class="file-info-item" *ngFor="let fileInfo of fileInfos; let i = index">
+                <div class="file-icon">
+                  <i class="pi pi-file-o"></i>
+                </div>
+                <div class="file-details">
+                  <div class="file-name">{{ fileInfo.name }}</div>
+                  <div class="file-metadata">
+                    <span class="file-size">{{ formatFileSize(fileInfo.size) }}</span>
+                    <span class="file-modified">Modified: {{ formatDate(fileInfo.lastModified) }}</span>
+                    <span class="file-type">{{ fileInfo.type || 'text/html' }}</span>
+                  </div>
+                </div>
+                <div class="file-actions">
+                  <button pButton pRipple
+                          type="button"
+                          icon="pi pi-eye"
+                          class="p-button-text p-button-sm"
+                          pTooltip="预览文件"
+                          (click)="previewUploadFile(fileInfo)">
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div class="upload-form" *ngIf="fileInfos.length > 0">
             <h4>File Details</h4>
@@ -480,7 +562,36 @@ interface FileInfo {
       height: 100%;
     }
 
-        .thumbnail-frame {      width: 800px;      height: 600px;      border: none;      background: white;      transform: scale(0.25);      transform-origin: top left;      pointer-events: none;      position: absolute;      top: 0;      left: 0;      border-radius: 4px;      opacity: 1;      transition: opacity 0.3s ease;    }    .thumbnail-frame.loading {      opacity: 0.5;    }    .thumbnail-placeholder {      width: 100%;      height: 100%;      display: flex;      align-items: center;      justify-content: center;      background: var(--surface-c);      color: var(--text-color-muted);      font-size: var(--font-size-sm);    }
+    .thumbnail-frame {
+      width: 800px;
+      height: 600px;
+      border: none;
+      background: white;
+      transform: scale(0.25);
+      transform-origin: top left;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 4px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .thumbnail-frame.loading {
+      opacity: 0.5;
+    }
+
+    .thumbnail-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-c);
+      color: var(--text-color-muted);
+      font-size: var(--font-size-sm);
+    }
 
     .thumbnail-overlay {
       position: absolute;
@@ -667,7 +778,21 @@ interface FileInfo {
       overflow-y: auto;
     }
 
-        .file-info-item {      display: flex;      align-items: center;      gap: var(--spacing-3);      padding: var(--spacing-3);      background: var(--surface-b);      border-radius: var(--border-radius);      border: 1px solid var(--border-color);    }    .file-actions {      display: flex;      gap: var(--spacing-2);      margin-left: auto;    }
+    .file-info-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3);
+      background: var(--surface-b);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
+    }
+
+    .file-actions {
+      display: flex;
+      gap: var(--spacing-2);
+      margin-left: auto;
+    }
 
     .file-icon {
       width: 40px;
@@ -853,14 +978,25 @@ export class HomeComponent implements OnInit {
 
   @ViewChild('fileInput') fileInput!: any;
 
-    constructor(    private htmlFileService: HtmlFileService,    private messageService: MessageService,    private router: Router,    private confirmationService: ConfirmationService,    private sanitizer: DomSanitizer  ) {}
+  constructor(
+    private htmlFileService: HtmlFileService,
+    private messageService: MessageService,
+    private router: Router,
+    private confirmationService: ConfirmationService,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
     this.setupCategoryOptions();
   }
 
-    private loadData(): void {    this.files = this.htmlFileService.getFiles();    this.categories = this.htmlFileService.getCategories();    this.filterFiles();    this.updatePopularTags();  }
+  private loadData(): void {
+    this.files = this.htmlFileService.getFiles();
+    this.categories = this.htmlFileService.getCategories();
+    this.filterFiles();
+    this.updatePopularTags();
+  }
 
   private setupCategoryOptions(): void {
     this.categoryOptions = this.htmlFileService.getCategories().map(cat => ({
@@ -922,7 +1058,14 @@ export class HomeComponent implements OnInit {
     return category?.color || '#6B7280';
   }
 
-    getFileUrl(file: HtmlFile): string {    return `http://localhost:8080/uploads/${file.filename}`;  }  getSafeFileUrl(file: HtmlFile): SafeResourceUrl {    const url = this.getFileUrl(file);    return this.sanitizer.bypassSecurityTrustResourceUrl(url);  }
+  getFileUrl(file: HtmlFile): string {
+    return `http://localhost:8080/uploads/${file.filename}`;
+  }
+
+  getSafeFileUrl(file: HtmlFile): SafeResourceUrl {
+    const url = this.getFileUrl(file);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
 
   selectCategory(categoryId: string): void {
     this.selectedCategory = categoryId;
@@ -1070,7 +1213,16 @@ export class HomeComponent implements OnInit {
     };
   }
 
-    editFile(file: HtmlFile): void {    // 跳转到编辑页面    this.router.navigate(['/edit', file.filename]);  }  editFileInfo(file: HtmlFile): void {    // 编辑文件信息（弹出对话框）    this.editingFile = { ...file };    this.showEditDialog = true;  }
+  editFile(file: HtmlFile): void {
+    // 跳转到编辑页面
+    this.router.navigate(['/edit', file.filename]);
+  }
+
+  editFileInfo(file: HtmlFile): void {
+    // 编辑文件信息（弹出对话框）
+    this.editingFile = { ...file };
+    this.showEditDialog = true;
+  }
 
   saveFileChanges(): void {
     if (this.editingFile) {
@@ -1167,27 +1319,23 @@ export class HomeComponent implements OnInit {
     return new Date(timestamp).toLocaleDateString();
   }
 
-  // 新增的方法来处理UI/UX改进
+  // UI/UX improvement methods
   navigateToDetails(file: HtmlFile): void {
     this.router.navigate(['/view', file.filename]);
   }
 
-  previewFile(file: HtmlFile, event: Event): void {
-    event.stopPropagation();
-    // 在模态框中预览文件
-    window.open(this.getFileUrl(file), '_blank', 'width=800,height=600');
-  }
-
-  editFileContent(file: HtmlFile, event: Event): void {
-    event.stopPropagation();
-    // 跳转到编辑页面
-    this.router.navigate(['/edit', file.filename]);
-  }
-
-  openInNewWindow(file: HtmlFile, event: Event): void {
-    event.stopPropagation();
-    // 在新窗口中打开文件
-    window.open(this.getFileUrl(file), '_blank');
+  previewUploadFile(fileInfo: FileInfo): void {
+    // 预览上传的HTML文件
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      const blob = new Blob([content], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank', 'width=800,height=600');
+      // 清理URL避免内存泄漏
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+    reader.readAsText(fileInfo.file);
   }
 
   showFileActions(file: HtmlFile, event: Event): void {
@@ -1196,5 +1344,13 @@ export class HomeComponent implements OnInit {
     console.log('Show file actions for:', file.filename);
   }
 
-    viewHistory(file: HtmlFile): void {    // 查看文件历史版本    console.log('View history for:', file.filename);    this.messageService.add({      severity: 'info',      summary: '历史记录',      detail: '历史记录功能正在开发中...'    });  }  previewUploadFile(fileInfo: FileInfo): void {    // 预览上传的HTML文件    const reader = new FileReader();    reader.onload = (e) => {      const content = e.target?.result as string;      const blob = new Blob([content], { type: 'text/html' });      const url = URL.createObjectURL(blob);      window.open(url, '_blank', 'width=800,height=600');      // 清理URL避免内存泄漏      setTimeout(() => URL.revokeObjectURL(url), 1000);    };    reader.readAsText(fileInfo.file);  }  saveFileChanges(): void {    if (this.editingFile) {      const success = this.htmlFileService.updateFile(this.editingFile.filename, this.editingFile);      if (success) {        this.messageService.add({          severity: 'success',          summary: 'Updated',          detail: 'File details updated successfully.'        });        this.loadData();      } else {        this.messageService.add({          severity: 'error',          summary: 'Error',          detail: 'Failed to update file details.'        });      }      this.showEditDialog = false;      this.editingFile = null;    }  }  openFileInNewWindow(file: HtmlFile): void {    // 在新窗口中打开文件    window.open(this.getFileUrl(file), '_blank');  }
+  viewHistory(file: HtmlFile): void {
+    // 查看文件历史版本
+    console.log('View history for:', file.filename);
+    this.messageService.add({
+      severity: 'info',
+      summary: '历史记录',
+      detail: '历史记录功能正在开发中...'
+    });
+  }
 }
