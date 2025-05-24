@@ -1,9 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { HtmlFileService, HtmlFile } from '../../services/html-file.service';
+import { Component, OnInit } from '@angular/core';import { CommonModule } from '@angular/common';import { FormsModule } from '@angular/forms';import { ActivatedRoute, Router } from '@angular/router';import { MessageService } from 'primeng/api';import { HtmlFileService, HtmlFile } from '../../services/html-file.service';import { I18nService } from '../../services/i18n.service';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
@@ -39,12 +34,7 @@ interface FileVersion {
       <!-- Editor Header -->
       <div class="editor-header">
         <div class="header-left">
-          <button pButton pRipple
-                  icon="fas fa-arrow-left"
-                  label="返回"
-                  class="p-button-outlined p-button-secondary"
-                  (click)="goBack()">
-          </button>
+                    <button pButton pRipple                  icon="fas fa-arrow-left"                  [label]="i18n.t('back')"                  class="p-button-outlined p-button-secondary"                  (click)="goBack()">          </button>
           <div class="file-info">
             <h2 *ngIf="currentFile">{{ currentFile.title || currentFile.filename }}</h2>
             <span class="file-path" *ngIf="currentFile">{{ currentFile.filename }}</span>
@@ -52,37 +42,7 @@ interface FileVersion {
         </div>
 
         <div class="header-actions">
-          <button pButton pRipple
-                  icon="fas fa-history"
-                  label="版本历史"
-                  class="p-button-outlined"
-                  pTooltip="查看版本历史"
-                  (click)="showVersionHistory = true"
-                  *ngIf="versions.length > 0">
-          </button>
-          <button pButton pRipple
-                  icon="fas fa-eye"
-                  label="预览"
-                  class="p-button-outlined"
-                  pTooltip="预览当前内容"
-                  (click)="previewContent()">
-          </button>
-          <button pButton pRipple
-                  icon="fas fa-save"
-                  label="保存"
-                  class="p-button-primary"
-                  pTooltip="保存更改"
-                  (click)="saveContent()"
-                  [disabled]="!hasChanges">
-          </button>
-          <button pButton pRipple
-                  icon="fas fa-code-branch"
-                  label="保存为版本"
-                  class="p-button-success"
-                  pTooltip="保存为新版本"
-                  (click)="showSaveVersionDialog = true"
-                  [disabled]="!hasChanges">
-          </button>
+                    <button pButton pRipple                  icon="fas fa-history"                  [label]="i18n.t('versionHistory')"                  class="p-button-outlined"                  [pTooltip]="i18n.t('versionHistory')"                  (click)="showVersionHistory = true"                  *ngIf="versions.length > 0">          </button>          <button pButton pRipple                  icon="fas fa-eye"                  [label]="i18n.t('preview')"                  class="p-button-outlined"                  [pTooltip]="i18n.t('preview')"                  (click)="previewContent()">          </button>          <button pButton pRipple                  icon="fas fa-save"                  [label]="i18n.t('save')"                  class="p-button-primary"                  [pTooltip]="i18n.t('save')"                  (click)="saveContent()"                  [disabled]="!hasChanges">          </button>          <button pButton pRipple                  icon="fas fa-code-branch"                  [label]="i18n.t('saveAsVersion')"                  class="p-button-success"                  [pTooltip]="i18n.t('saveAsVersion')"                  (click)="showSaveVersionDialog = true"                  [disabled]="!hasChanges">          </button>
         </div>
       </div>
 
@@ -517,12 +477,7 @@ export class HtmlEditorComponent implements OnInit {
   canUndo: boolean = false;
   canRedo: boolean = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private htmlFileService: HtmlFileService,
-    private messageService: MessageService
-  ) {}
+    constructor(    private route: ActivatedRoute,    private router: Router,    private htmlFileService: HtmlFileService,    private messageService: MessageService,    public i18n: I18nService  ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {

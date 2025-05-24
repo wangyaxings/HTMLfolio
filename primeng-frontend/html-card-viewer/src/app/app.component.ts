@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
+import { DropdownModule } from 'primeng/dropdown';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
+import { I18nService, Language } from './services/i18n.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastModule, ButtonModule, TooltipModule, CommonModule],
-  providers: [MessageService],
+  imports: [RouterOutlet, ToastModule, ButtonModule, TooltipModule, DropdownModule, CommonModule, FormsModule],
+  providers: [MessageService, I18nService],
   template: `
     <div class="app-container" [class.dark-theme]="isDarkMode">
       <!-- Modern Header -->
@@ -20,13 +23,58 @@ import { CommonModule } from '@angular/common';
             <div class="logo">
               <i class="pi pi-file-o logo-icon"></i>
               <div class="brand-text">
-                <h1 class="app-title">HTML Viewer</h1>
-                <span class="app-subtitle">Organize with style</span>
+                <h1 class="app-title">{{ i18n.t('appTitle') }}</h1>
+                <span class="app-subtitle">{{ i18n.t('appSubtitle') }}</span>
               </div>
             </div>
           </div>
 
-                    <div class="header-actions">            <button pButton pRipple                    type="button"                    class="theme-toggle-btn"                    [pTooltip]="isDarkMode ? '切换到浅色模式' : '切换到深色模式'"                    tooltipPosition="bottom"                    (click)="toggleDarkMode()">              <i [class]="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"                  [style.color]="isDarkMode ? '#fbbf24' : '#6366f1'"></i>            </button>          </div>
+          <div class="header-actions">
+            <!-- GitHub Link -->
+            <a href="https://github.com/wangyaxings"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="github-link"
+               [pTooltip]="'Visit GitHub Profile'"
+               tooltipPosition="bottom">
+              <i class="fab fa-github github-icon"></i>
+            </a>
+
+            <!-- Language Selector -->
+            <p-dropdown
+              [options]="languages"
+              [(ngModel)]="selectedLanguage"
+              optionLabel="name"
+              optionValue="code"
+              [showClear]="false"
+              styleClass="language-dropdown"
+              (onChange)="onLanguageChange($event)"
+              [pTooltip]="i18n.t('language')"
+              tooltipPosition="bottom">
+              <ng-template pTemplate="selectedItem">
+                <div class="language-item">
+                  <span>{{ getSelectedLanguage()?.flag }}</span>
+                  <span>{{ getSelectedLanguage()?.name }}</span>
+                </div>
+              </ng-template>
+              <ng-template let-language pTemplate="item">
+                <div class="language-item">
+                  <span>{{ language.flag }}</span>
+                  <span>{{ language.name }}</span>
+                </div>
+              </ng-template>
+            </p-dropdown>
+
+            <button pButton pRipple
+                    type="button"
+                    class="theme-toggle-btn"
+                    [pTooltip]="i18n.t('toggleTheme')"
+                    tooltipPosition="bottom"
+                    (click)="toggleDarkMode()">
+              <i [class]="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"
+                  [style.color]="isDarkMode ? '#fbbf24' : '#6366f1'"></i>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -35,10 +83,13 @@ import { CommonModule } from '@angular/common';
         <router-outlet></router-outlet>
       </main>
 
-      <!-- Minimal Footer -->
+      <!-- Professional Footer -->
       <footer class="app-footer">
         <div class="footer-container">
-          <p class="copyright">© 2025 HTML Viewer - Crafted with ❤️</p>
+          <div class="footer-content">
+            <p class="copyright">© 2025 HTML Viewer. All rights reserved.</p>
+            <p class="footer-meta">Professional HTML Preview & Analysis Tool</p>
+          </div>
         </div>
       </footer>
 
@@ -46,7 +97,51 @@ import { CommonModule } from '@angular/common';
       <p-toast position="top-right" [life]="5000"></p-toast>
     </div>
   `,
-  styles: [`
+    styles: [`
+    /* CSS Custom Properties for consistent design tokens */
+    :root {
+      --primary-color: #6366f1;
+      --primary-color-rgb: 99, 102, 241;
+      --surface-a: rgba(255, 255, 255, 0.95);
+      --surface-b: #f8fafc;
+      --surface-c: #f1f5f9;
+      --surface-d: #e2e8f0;
+      --text-color: #1e293b;
+      --text-color-muted: #475569;
+      --text-color-subtle: #64748b;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --transition-duration: 0.2s;
+      --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+      --header-height: 4rem;
+      --footer-height: 4rem;
+      --container-max-width: 1200px;
+      --spacing-2: 0.5rem;
+      --spacing-3: 0.75rem;
+      --spacing-4: 1rem;
+      --spacing-6: 1.5rem;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.25rem;
+      --font-weight-medium: 500;
+      --font-weight-bold: 700;
+      --border-radius-full: 9999px;
+    }
+
+    /* Dark theme custom properties */
+    .dark-theme {
+      --surface-a: rgba(20, 20, 20, 0.95);
+      --surface-b: #0f172a;
+      --surface-c: #1e293b;
+      --surface-d: #334155;
+      --text-color: #f1f5f9;
+      --text-color-muted: #cbd5e1;
+      --text-color-subtle: #94a3b8;
+      --border-color: #334155;
+    }
+
     .app-container {
       min-height: 100vh;
       display: flex;
@@ -120,6 +215,45 @@ import { CommonModule } from '@angular/common';
       gap: var(--spacing-3);
     }
 
+    /* GitHub Link Styles */
+    .github-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: var(--border-radius-full);
+      background: var(--surface-c);
+      border: 1px solid var(--border-color);
+      text-decoration: none;
+      transition: all var(--transition-duration) var(--transition-timing);
+      color: var(--text-color);
+    }
+
+    .github-link:hover {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .github-icon {
+      font-size: 1.25rem;
+      color: inherit;
+    }
+
+    /* Language Dropdown Styles */
+    .language-dropdown {
+      min-width: 120px !important;
+    }
+
+    .language-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
     .theme-toggle-btn {
       width: 2.5rem !important;
       height: 2.5rem !important;
@@ -144,7 +278,7 @@ import { CommonModule } from '@angular/common';
       min-height: calc(100vh - var(--header-height) - var(--footer-height));
     }
 
-    /* Footer */
+    /* Footer Styles */
     .app-footer {
       background: var(--surface-a);
       border-top: 1px solid var(--border-color);
@@ -155,29 +289,49 @@ import { CommonModule } from '@angular/common';
       max-width: var(--container-max-width);
       margin: 0 auto;
       padding: 0 var(--spacing-6);
-      text-align: center;
+    }
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
     }
 
     .copyright {
       font-size: var(--font-size-sm);
+      color: var(--text-color);
+      font-weight: var(--font-weight-medium);
+      margin: 0;
+    }
+
+    .footer-meta {
+      font-size: var(--font-size-xs);
       color: var(--text-color-muted);
       margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     /* Dark Theme Specific Styles */
     .dark-theme .app-header {
-      background: rgba(30, 30, 30, 0.9);
+      background: rgba(30, 30, 30, 0.95);
       border-bottom-color: var(--border-color);
     }
 
     .dark-theme .app-footer {
-      background: rgba(30, 30, 30, 0.9);
+      background: rgba(30, 30, 30, 0.95);
       border-top-color: var(--border-color);
     }
 
     .dark-theme .theme-toggle-btn {
       background: var(--surface-d) !important;
       border-color: var(--border-color) !important;
+    }
+
+    .dark-theme .github-link {
+      background: var(--surface-d);
+      border-color: var(--border-color);
     }
 
     /* Responsive Design */
@@ -202,6 +356,14 @@ import { CommonModule } from '@angular/common';
       .main-content {
         padding: var(--spacing-4) 0;
       }
+
+      .language-dropdown {
+        min-width: 100px !important;
+      }
+
+      .footer-content {
+        text-align: center;
+      }
     }
 
     @media (max-width: 480px) {
@@ -212,6 +374,46 @@ import { CommonModule } from '@angular/common';
       .logo-icon {
         font-size: 1.5rem;
       }
+
+      .language-item span:last-child {
+        display: none;
+      }
+
+      .header-actions {
+        gap: var(--spacing-2);
+      }
+
+      .github-link,
+      .theme-toggle-btn {
+        width: 2rem !important;
+        height: 2rem !important;
+      }
+
+      .github-icon {
+        font-size: 1rem;
+      }
+    }
+
+    /* High Contrast Support for Accessibility */
+    @media (prefers-contrast: high) {
+      .app-container {
+        --text-color: #000000;
+        --text-color-muted: #333333;
+        --border-color: #000000;
+      }
+
+      .dark-theme {
+        --text-color: #ffffff;
+        --text-color-muted: #cccccc;
+        --border-color: #ffffff;
+      }
+    }
+
+    /* Focus indicators for accessibility */
+    .github-link:focus,
+    .theme-toggle-btn:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
     }
 
     /* Smooth transitions for all interactive elements */
@@ -225,6 +427,13 @@ import { CommonModule } from '@angular/common';
 export class AppComponent implements OnInit {
   title = 'html-card-viewer';
   isDarkMode = false;
+  languages: Language[] = [];
+  selectedLanguage = 'en';
+
+  constructor(public i18n: I18nService) {
+    this.languages = this.i18n.getLanguages();
+    this.selectedLanguage = this.i18n.getCurrentLanguage();
+  }
 
   ngOnInit() {
     // Load theme preference from localStorage
@@ -237,6 +446,15 @@ export class AppComponent implements OnInit {
     this.isDarkMode = !this.isDarkMode;
     localStorage.setItem('theme-preference', this.isDarkMode ? 'dark' : 'light');
     this.applyTheme();
+  }
+
+  onLanguageChange(event: any) {
+    this.i18n.setLanguage(event.value);
+    this.selectedLanguage = event.value;
+  }
+
+  getSelectedLanguage(): Language | undefined {
+    return this.languages.find(lang => lang.code === this.selectedLanguage);
   }
 
   private applyTheme() {

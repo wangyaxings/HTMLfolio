@@ -1,11 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { HtmlFileService } from '../../services/html-file.service';
-import { MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { TooltipModule } from 'primeng/tooltip';
+import { Component, OnInit } from '@angular/core';import { CommonModule } from '@angular/common';import { ActivatedRoute, Router } from '@angular/router';import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';import { HtmlFileService } from '../../services/html-file.service';import { I18nService } from '../../services/i18n.service';import { MessageService } from 'primeng/api';import { ButtonModule } from 'primeng/button';import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-html-viewer',
@@ -17,27 +10,12 @@ import { TooltipModule } from 'primeng/tooltip';
         <!-- Viewer Header Toolbar -->
         <div class="viewer-header">
           <div class="header-left">
-            <button pButton pRipple
-                    icon="pi pi-arrow-left"
-                    label="Back"
-                    class="p-button-outlined p-button-secondary"
-                    (click)="goBack()"></button>
+                        <button pButton pRipple                    icon="pi pi-arrow-left"                    [label]="i18n.t('back')"                    class="p-button-outlined p-button-secondary"                    (click)="goBack()"></button>
             <h2 *ngIf="fileTitle">{{ fileTitle }}</h2>
           </div>
 
           <div class="header-actions" *ngIf="fileUrl">
-            <button pButton pRipple
-                    icon="pi pi-copy"
-                    pTooltip="Copy HTML Path"
-                    tooltipPosition="bottom"
-                    class="p-button-text p-button-secondary"
-                    (click)="copyHtmlPath()"></button>
-            <button pButton pRipple
-                    icon="pi pi-external-link"
-                    pTooltip="Open in New Tab"
-                    tooltipPosition="bottom"
-                    class="p-button-text p-button-secondary"
-                    (click)="openInNewTab()"></button>
+                        <button pButton pRipple                    icon="pi pi-copy"                    [pTooltip]="i18n.t('copyPath')"                    tooltipPosition="bottom"                    class="p-button-text p-button-secondary"                    (click)="copyHtmlPath()"></button>            <button pButton pRipple                    icon="pi pi-external-link"                    [pTooltip]="i18n.t('openNewTab')"                    tooltipPosition="bottom"                    class="p-button-text p-button-secondary"                    (click)="openInNewTab()"></button>
           </div>
         </div>
 
@@ -48,7 +26,7 @@ import { TooltipModule } from 'primeng/tooltip';
             <div class="loading-spinner">
               <i class="pi pi-spin pi-spinner"></i>
             </div>
-            <span>Loading HTML content...</span>
+            <span>{{ i18n.t('loadingContent') }}</span>
           </div>
 
           <!-- HTML Content Preview -->
@@ -63,20 +41,7 @@ import { TooltipModule } from 'primeng/tooltip';
             <div class="error-icon">
               <i class="pi pi-exclamation-circle"></i>
             </div>
-            <h3>HTML File Not Found</h3>
-            <p>Please check if the file exists or return to the home page</p>
-            <div class="error-actions">
-              <button pButton pRipple
-                      label="Go Home"
-                      icon="pi pi-home"
-                      class="p-button-primary"
-                      (click)="goHome()"></button>
-              <button pButton pRipple
-                      label="Refresh"
-                      icon="pi pi-refresh"
-                      class="p-button-outlined p-button-secondary"
-                      (click)="reloadPage()"></button>
-            </div>
+                        <h3>{{ i18n.t('fileNotFound') }}</h3>            <p>{{ i18n.t('fileNotFoundMessage') }}</p>            <div class="error-actions">              <button pButton pRipple                      [label]="i18n.t('goHome')"                      icon="pi pi-home"                      class="p-button-primary"                      (click)="goHome()"></button>              <button pButton pRipple                      [label]="i18n.t('refresh')"                      icon="pi pi-refresh"                      class="p-button-outlined p-button-secondary"                      (click)="reloadPage()"></button>            </div>
           </div>
         </div>
 
@@ -87,11 +52,7 @@ import { TooltipModule } from 'primeng/tooltip';
             <span class="file-path">{{ rawUrl }}</span>
           </div>
           <div class="footer-actions">
-            <button pButton pRipple
-                    label="Go Home"
-                    icon="pi pi-home"
-                    class="p-button-text p-button-sm"
-                    (click)="goHome()"></button>
+                        <button pButton pRipple                    [label]="i18n.t('goHome')"                    icon="pi pi-home"                    class="p-button-text p-button-sm"                    (click)="goHome()"></button>
           </div>
         </div>
       </div>
@@ -419,13 +380,7 @@ export class HtmlViewerComponent implements OnInit {
   rawUrl: string | null = null;
   isLoading: boolean = true;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private htmlFileService: HtmlFileService,
-    private sanitizer: DomSanitizer,
-    private messageService: MessageService
-  ) {}
+    constructor(    private route: ActivatedRoute,    private router: Router,    private htmlFileService: HtmlFileService,    private sanitizer: DomSanitizer,    private messageService: MessageService,    public i18n: I18nService  ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
