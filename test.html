@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桌面背景配色方案</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 定义 Inter 字体，如果系统没有，则使用 sans-serif */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease-in-out; /* 平滑过渡背景色 */
+        }
+        /* 自定义颜色块样式 */
+        .color-box {
+            width: 100%;
+            height: 8rem; /* 固定高度 */
+            border-radius: 0.75rem; /* 圆角 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-weight: 600;
+            color: #ffffff; /* 默认白色文字 */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* 文字阴影 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
+            transition: transform 0.2s ease-in-out;
+        }
+        .color-box:hover {
+            transform: translateY(-5px); /* 悬停效果 */
+        }
+        /* 针对浅色背景的文字颜色调整 */
+        .color-box.text-dark {
+            color: #333333;
+            text-shadow: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 p-4 sm:p-8">
+
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-10 mb-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-4 text-gray-900">桌面背景配色方案展示</h1>
+        <p class="text-center text-lg text-gray-600 mb-8">
+            以下是根据您提供的图片，为您设计的三个更深沉、柔和且与原色协调的桌面背景配色方案。
+            每个方案都展示了主背景色，以及原始浅色块和建议的辅助色如何融入其中。
+        </p>
+    </div>
+
+    <div class="max-w-6xl mx-auto rounded-xl shadow-lg p-6 sm:p-10 mb-12" style="background-color: #5E7C7A;">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-6 text-center">方案一：清新的“湖畔晨雾”调</h2>
+        <p class="text-center text-white text-opacity-80 mb-8">
+            主色：<span class="font-bold">#5E7C7A</span> (深湖绿/灰蓝绿) - 沉静、安宁，具有自然气息。
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-white text-lg font-medium mb-2">原始浅色块 (与背景形成和谐对比):</div>
+            <div class="color-box text-dark" style="background-color: #CFE8E7;">
+                <span class="text-base">原始浅薄荷绿/淡蓝</span>
+                <span class="text-sm">#CFE8E7</span>
+            </div>
+            <div class="color-box text-dark" style="background-color: #FFF3D9;">
+                <span class="text-base">原始浅米黄/淡橙</span>
+                <span class="text-sm">#FFF3D9</span>
+            </div>
+            <div class="color-box text-dark" style="background-color: #EFE7F6;">
+                <span class="text-base">原始浅紫/淡粉</span>
+                <span class="text-sm">#EFE7F6</span>
+            </div>
+            <div class="color-box bg-transparent border border-white border-dashed text-white text-sm">
+                <span class="text-base">您的原始浅色块</span>
+                <span class="text-sm">（示意图）</span>
+            </div>
+
+            <div class="col-span-full text-white text-lg font-medium mt-6 mb-2">推荐的辅助色 (用于小元素或界面细节):</div>
+            <div class="color-box text-dark" style="background-color: #F5F5F0;">
+                <span class="text-base">柔和米白</span>
+                <span class="text-sm">#F5F5F0</span>
+            </div>
+            <div class="color-box" style="background-color: #A0A0A0;">
+                <span class="text-base">中性灰</span>
+                <span class="text-sm">#A0A0A0</span>
+            </div>
+            <div class="color-box" style="background-color: #8C7A96;">
+                <span class="text-base">暗丁香紫</span>
+                <span class="text-sm">#8C7A96</span>
+            </div>
+            <div class="color-box" style="background-color: #4A5F6E;">
+                <span class="text-base">深灰蓝</span>
+                <span class="text-sm">#4A5F6E</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto rounded-xl shadow-lg p-6 sm:p-10 mb-12" style="background-color: #7A6A5E;">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-6 text-center">方案二：温暖的“咖啡与奶盖”调</h2>
+        <p class="text-center text-white text-opacity-80 mb-8">
+            主色：<span class="font-bold">#7A6A5E</span> (暖灰棕/咖啡色) - 温馨、舒适、成熟。
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-white text-lg font-medium mb-2">原始浅色块 (与背景形成和谐对比):</div>
+            <div class="color-box text-dark" style="background-color: #CFE8E7;">
+                <span class="text-base">原始浅薄荷绿/淡蓝</span>
+                <span class="text-sm">#CFE8E7</span>
+            </div>
+            <div class="color-box text-dark" style="background-color: #FFF3D9;">
+                <span class="text-base">原始浅米黄/淡橙</span>
+                <span class="text-sm">#FFF3D9</span>
+            </div>
+            <div class="color-box text-dark" style="background-color: #EFE7F6;">
+                <span class="text-base">原始浅紫/淡粉</span>
+                <span class="text-sm">#EFE7F6</span>
+            </div>
+             <div class="color-box bg-transparent border border-white border-dashed text-white text-sm">
+                <span class="text-base">您的原始浅色块</span>
+                <span class="text-sm">（示意图）</span>
+            </div>
+
+            <div class="col-span-full text-white text-lg font-medium mt-6 mb-2">推荐的辅助色 (用于小元素或界面细节):</div>
+            <div class="color-box text-dark" style="background-color: #FFFCEB;">
+                <span class="text-base">柔和奶油白</span>
+                <span class="text-sm">#FFFCEB</span>
+            </div>
+            <div class="color-box" style="background-color: #4A3D30;">
+                <span class="text-base">深木色</span>
+                <span class="text-sm">#4A3D30</span>
+            </div>
+            <div class="color-box text-dark" style="background-color: #A8B5B1;">
+                <span class="text-base">淡绿灰</span>
+                <span class="text-sm">#A8B5B1</span>
+            </div>
+            <div class="color-box" style="background-color: #AF8B5F;">
+                <span class="text-base">深琥珀金</span>
+                <span class="text-sm">#AF8B5F</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto rounded-xl shadow-lg p-6 sm:p-10 mb-12" style="background-color: #6B6078;">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-6 text-center">方案三：优雅的“薰衣草田夜幕”调</h2>
+        <p class="text-center text-white text-opacity-80 mb-8">
+            主色：<span class="font-bold">#6B6078</span> (深薰衣草灰/暗灰紫) - 优雅、内敛、富有艺术感。
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-white text-lg font-medium mb-2">原始浅色块 (与背景形成和谐对比):</div>
+            <div class="color-box text-dark" style="background-color: #CFE8E7;">
+                <span class="text-base">原始浅薄荷绿/淡蓝</span>
+                <span class="text-sm">#CFE8E7</span>
+            </div>
+            <div class="color-box text-dark" style="background-color: #FFF3D9;">
+                <span class="text-base">原始浅米黄/淡橙</span>
+                <span class="text-sm">#FFF3D9</span>
+            </div>
+            <div class="color-box text-dark" style="background-color: #EFE7F6;">
+                <span class="text-base">原始浅紫/淡粉</span>
+                <span class="text-sm">#EFE7F6</span>
+            </div>
+             <div class="color-box bg-transparent border border-white border-dashed text-white text-sm">
+                <span class="text-base">您的原始浅色块</span>
+                <span class="text-sm">（示意图）</span>
+            </div>
+
+            <div class="col-span-full text-white text-lg font-medium mt-6 mb-2">推荐的辅助色 (用于小元素或界面细节):</div>
+            <div class="color-box text-dark" style="background-color: #F8F3F9;">
+                <span class="text-base">浅灰粉</span>
+                <span class="text-sm">#F8F3F9</span>
+            </div>
+            <div class="color-box" style="background-color: #4F5567;">
+                <span class="text-base">深灰蓝</span>
+                <span class="text-sm">#4F5567</span>
+            </div>
+            <div class="color-box text-dark" style="background-color: #AAB5B1;">
+                <span class="text-base">柔和灰绿</span>
+                <span class="text-sm">#AAB5B1</span>
+            </div>
+            <div class="color-box" style="background-color: #9B8B9E;">
+                <span class="text-base">深丁香灰</span>
+                <span class="text-sm">#9B8B9E</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-10 mt-8 text-center text-gray-700">
+        <p class="mb-4">
+            您可以点击预览按钮查看效果。希望这些方案能帮助您找到最适合的桌面背景！
+        </p>
+        <p class="text-sm text-gray-500">
+            *注：原始浅色块的十六进制代码是根据图片大致判断的，实际应用时请以您原始图片中实际的颜色为准。
+        </p>
+    </div>
+
+</body>
+</html>

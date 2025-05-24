@@ -1,0 +1,355 @@
+/* WebStackPage风格主题颜色 - 基于PrimeNG主题系统优化 */
+:root {
+  /* 原始令牌（Primitive Tokens） */
+  --blue-50: #edf0fd;
+  --blue-100: #dae0fb;
+  --blue-200: #b5c2f7;
+  --blue-300: #91a4f4;
+  --blue-400: #6c86f0;
+  --blue-500: #4e6ef2;
+  --blue-600: #3b5de7;
+  --blue-700: #2f4cdd;
+  --blue-800: #273fcb;
+  --blue-900: #1f32b0;
+  --blue-950: #162373;
+
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --gray-950: #030712;
+
+  --red-500: #f44336;
+  --green-500: #42b983;
+  --amber-500: #f8b250;
+  --cyan-500: #42bbf8;
+
+  /* 语义令牌（Semantic Tokens） */
+  --primary-color: var(--blue-500);
+  --primary-light-color: var(--blue-100);
+  --primary-lighter-color: var(--blue-50);
+  --primary-dark-color: var(--blue-600);
+  --primary-darker-color: var(--blue-700);
+
+  --secondary-color: #5d6e95;
+  --secondary-light-color: #e9ecf4;
+  --secondary-dark-color: #485989;
+
+  --success-color: var(--green-500);
+  --info-color: var(--cyan-500);
+  --warning-color: var(--amber-500);
+  --danger-color: var(--red-500);
+
+  /* 表面和边框 */
+  --surface-a: #ffffff;
+  --surface-b: #f9f9f9;
+  --surface-c: #f5f7fa;
+  --surface-d: #eaedf1;
+  --surface-card: var(--surface-a);
+  --surface-overlay: var(--surface-a);
+
+  --border-color: #eff2f7;
+  --border-light-color: #f8f9fa;
+  --border-dark-color: #dee2e6;
+
+  /* 文本颜色 */
+  --text-color: var(--gray-800);
+  --text-secondary-color: var(--gray-600);
+  --text-muted: var(--gray-500);
+  --text-light: var(--gray-400);
+  --text-white: #ffffff;
+
+  /* 尺寸与间距 - 使用8px为基础 */
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+
+  /* 字体大小 - 更加协调一致 */
+  --font-size-xs: 0.75rem;       /* 12px */
+  --font-size-sm: 0.875rem;      /* 14px */
+  --font-size-base: 1rem;        /* 16px */
+  --font-size-lg: 1.125rem;      /* 18px */
+  --font-size-xl: 1.25rem;       /* 20px */
+  --font-size-2xl: 1.5rem;       /* 24px */
+  --font-size-3xl: 1.875rem;     /* 30px */
+
+  /* 字重 */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* 行高 */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* 圆角 */
+  --border-radius-none: 0;
+  --border-radius-sm: 0.125rem;    /* 2px */
+  --border-radius: 0.25rem;        /* 4px */
+  --border-radius-md: 0.375rem;    /* 6px */
+  --border-radius-lg: 0.5rem;      /* 8px */
+  --border-radius-xl: 0.75rem;     /* 12px */
+  --border-radius-full: 9999px;
+
+  /* 过渡动画 */
+  --transition-duration: 0.2s;
+  --transition-duration-fast: 0.15s;
+  --transition-duration-slow: 0.3s;
+  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* 容器和区域 */
+  --section-padding: var(--spacing-6);
+  --card-padding: var(--spacing-4);
+  --header-height: 4rem;
+  --footer-height: 3.5rem;
+
+  /* 字体系列 */
+  --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --font-family-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  /* 组件特定变量 */
+  --card-shadow: var(--shadow-md);
+  --card-border-radius: var(--border-radius-lg);
+  --button-border-radius: var(--border-radius);
+  --input-border-radius: var(--border-radius);
+}
+
+/* 为深色模式准备的变量 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-a: var(--gray-900);
+    --surface-b: var(--gray-800);
+    --surface-c: var(--gray-700);
+    --surface-d: var(--gray-600);
+
+    --text-color: var(--gray-100);
+    --text-secondary-color: var(--gray-300);
+    --text-muted: var(--gray-400);
+    --text-light: var(--gray-500);
+
+    --border-color: var(--gray-700);
+    --border-light-color: var(--gray-600);
+    --border-dark-color: var(--gray-800);
+
+    --primary-light-color: var(--blue-800);
+  }
+}
+
+/* WebStackPage风格的UI元素 */
+.webstack-card {
+  transition: all var(--transition-duration) var(--transition-timing);
+  height: 100%;
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  background-color: var(--surface-card);
+  overflow: hidden;
+}
+
+.webstack-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.webstack-card .p-card-header {
+  padding: 0;
+}
+
+.webstack-card .p-card-body {
+  padding: var(--card-padding);
+}
+
+.webstack-card .p-card-title {
+  color: var(--text-color);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-1);
+  line-height: var(--line-height-tight);
+}
+
+.webstack-card .p-card-subtitle {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-2);
+  line-height: var(--line-height-normal);
+}
+
+.webstack-card .p-card-content {
+  padding: var(--spacing-2) 0;
+}
+
+.webstack-card .p-card-footer {
+  padding: var(--spacing-3) 0 0;
+  border-top: 1px solid var(--border-color);
+}
+
+/* 卡片预览区 */
+.card-preview {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-c);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.html-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 2.5rem;
+  color: var(--primary-color);
+}
+
+.html-icon span {
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-2);
+  color: var(--text-secondary-color);
+}
+
+/* 按钮样式 */
+.p-button {
+  border-radius: var(--button-border-radius);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-duration) var(--transition-timing),
+              color var(--transition-duration) var(--transition-timing),
+              border-color var(--transition-duration) var(--transition-timing),
+              box-shadow var(--transition-duration) var(--transition-timing);
+}
+
+.p-button:focus {
+  box-shadow: 0 0 0 2px var(--surface-b), 0 0 0 4px var(--primary-light-color);
+}
+
+.p-button.p-button-sm {
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-1) var(--spacing-3);
+}
+
+.p-button.p-button-lg {
+  font-size: var(--font-size-base);
+  padding: var(--spacing-3) var(--spacing-6);
+}
+
+/* 空状态样式 */
+.empty-state {
+  padding: var(--spacing-12) var(--spacing-8);
+  text-align: center;
+  background-color: var(--surface-card);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--shadow-sm);
+  margin: var(--spacing-6) 0;
+}
+
+.empty-state .empty-icon {
+  font-size: 4rem;
+  color: var(--gray-300);
+  margin-bottom: var(--spacing-4);
+}
+
+.empty-state h3 {
+  font-size: var(--font-size-xl);
+  margin: var(--spacing-4) 0 var(--spacing-2);
+  color: var(--text-color);
+  font-weight: var(--font-weight-medium);
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-6);
+  font-size: var(--font-size-base);
+}
+
+/* 文件上传区样式 */
+.webstack-upload {
+  background-color: var(--surface-card);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.webstack-upload .p-fileupload-buttonbar {
+  background: transparent;
+  border: none;
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-2);
+}
+
+.webstack-upload .p-fileupload-content {
+  background: transparent;
+  border: 2px dashed var(--border-color);
+  padding: var(--spacing-8) var(--spacing-4);
+  text-align: center;
+  border-radius: var(--border-radius);
+  margin: 0 var(--spacing-4) var(--spacing-4);
+  transition: border-color var(--transition-duration) var(--transition-timing);
+}
+
+.webstack-upload .p-fileupload-content:hover {
+  border-color: var(--primary-light-color);
+}
+
+/* 查看器样式 */
+.viewer-container {
+  background-color: var(--surface-card);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 180px);
+}
+
+.viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-4) var(--spacing-6);
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--surface-a);
+}
+
+.viewer-header h2 {
+  margin: 0 0 0 var(--spacing-4);
+  padding: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color);
+}
+
+/* 响应式辅助类 */
+@media (max-width: 768px) {
+  :root {
+    --section-padding: var(--spacing-4);
+    --card-padding: var(--spacing-3);
+  }
+
+  .webstack-card .p-card-body {
+    padding: var(--spacing-3);
+  }
+
+  .empty-state {
+    padding: var(--spacing-8) var(--spacing-4);
+  }
+}
