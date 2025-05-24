@@ -2,228 +2,223 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastModule, ButtonModule, CommonModule],
+  imports: [RouterOutlet, ToastModule, ButtonModule, TooltipModule, CommonModule],
   providers: [MessageService],
   template: `
     <div class="app-container" [class.dark-theme]="isDarkMode">
-      <!-- Top Navigation Bar -->
-      <header class="navbar">
-        <div class="navbar-container">
-          <div class="navbar-brand">
-            <i class="pi pi-file-o logo-icon"></i>
-            <h1 class="navbar-title">HTML Card Viewer</h1>
-          </div>
-          <div class="navbar-actions">
-            <div class="theme-toggle">
-              <button pButton pRipple
-                      type="button"
-                      [icon]="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
-                      class="p-button-text p-button-rounded"
-                      pTooltip="Toggle Dark Mode"
-                      tooltipPosition="bottom"
-                      (click)="toggleDarkMode()"></button>
+      <!-- Modern Header -->
+      <header class="app-header">
+        <div class="header-container">
+          <div class="brand-section">
+            <div class="logo">
+              <i class="pi pi-file-o logo-icon"></i>
+              <div class="brand-text">
+                <h1 class="app-title">HTML Viewer</h1>
+                <span class="app-subtitle">Organize with style</span>
+              </div>
             </div>
-            <a href="https://github.com/your-username/html-card-viewer"
-               target="_blank"
-               class="github-link">
-              <i class="pi pi-github"></i>
-              <span>GitHub</span>
-            </a>
           </div>
+
+                    <div class="header-actions">            <button pButton pRipple                    type="button"                    class="theme-toggle-btn"                    [pTooltip]="isDarkMode ? '切换到浅色模式' : '切换到深色模式'"                    tooltipPosition="bottom"                    (click)="toggleDarkMode()">              <i [class]="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"                  [style.color]="isDarkMode ? '#fbbf24' : '#6366f1'"></i>            </button>          </div>
         </div>
       </header>
 
-      <!-- Main Content Area -->
-      <main class="content">
-        <div class="page-container">
-          <router-outlet></router-outlet>
-        </div>
+      <!-- Main Content -->
+      <main class="main-content">
+        <router-outlet></router-outlet>
       </main>
 
-      <!-- Footer -->
-      <footer class="footer">
-        <div class="footer-content">
-          <p class="footer-copyright">© 2025 HTML Card Viewer - Organize your HTML files efficiently</p>
+      <!-- Minimal Footer -->
+      <footer class="app-footer">
+        <div class="footer-container">
+          <p class="copyright">© 2025 HTML Viewer - Crafted with ❤️</p>
         </div>
       </footer>
 
-      <!-- Global Message Toast -->
-      <p-toast position="top-right"></p-toast>
+      <!-- Toast Notifications -->
+      <p-toast position="top-right" [life]="5000"></p-toast>
     </div>
   `,
   styles: [`
     .app-container {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
-      transition: background-color 0.3s ease;
+      background: linear-gradient(135deg, var(--surface-b) 0%, var(--surface-c) 100%);
+      transition: all var(--transition-duration) var(--transition-timing);
     }
 
-    .dark-theme {
-      background-color: #1a1a1a;
-      color: #e0e0e0;
-    }
-
-    /* Navigation Bar Styles */
-    .navbar {
-      background-color: var(--surface-a);
-      box-shadow: var(--shadow-md);
+    /* Header Styles */
+    .app-header {
+      background: var(--surface-a);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: var(--container-max-width);
+      margin: 0 auto;
+      padding: 0 var(--spacing-6);
       height: var(--header-height);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .dark-theme .navbar {
-      background-color: #2a2a2a;
-      border-bottom-color: #3a3a3a;
-    }
-
-    .navbar-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 var(--spacing-6);
-      height: 100%;
     }
 
-    .navbar-brand {
+    .brand-section {
       display: flex;
       align-items: center;
     }
 
-    .logo-icon {
-      font-size: 1.8rem;
-      color: var(--primary-color);
-      margin-right: var(--spacing-3);
-    }
-
-    .navbar-title {
-      margin: 0;
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-bold);
-      color: var(--text-color);
-    }
-
-    .dark-theme .navbar-title {
-      color: #e0e0e0;
-    }
-
-    .navbar-actions {
+    .logo {
       display: flex;
       align-items: center;
       gap: var(--spacing-3);
     }
 
-    .theme-toggle {
-      display: flex;
-      align-items: center;
-    }
-
-    .github-link {
-      display: flex;
-      align-items: center;
-      color: var(--text-secondary-color);
-      text-decoration: none;
-      font-size: var(--font-size-sm);
-      transition: color var(--transition-duration) var(--transition-timing);
-      border-radius: var(--border-radius);
-      padding: var(--spacing-2) var(--spacing-3);
-    }
-
-    .github-link:hover {
+    .logo-icon {
+      font-size: 2rem;
       color: var(--primary-color);
-      background-color: var(--surface-c);
-      text-decoration: none;
+      filter: drop-shadow(0 2px 4px rgba(var(--primary-color-rgb), 0.3));
     }
 
-    .dark-theme .github-link {
-      color: #b0b0b0;
+    .brand-text {
+      display: flex;
+      flex-direction: column;
     }
 
-    .dark-theme .github-link:hover {
-      background-color: #3a3a3a;
+    .app-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-color);
+      margin: 0;
+      line-height: 1.2;
     }
 
-    .github-link i {
-      font-size: 1.2rem;
-      margin-right: var(--spacing-2);
+    .app-subtitle {
+      font-size: var(--font-size-xs);
+      color: var(--text-color-muted);
+      font-weight: var(--font-weight-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    /* Main Content Area */
-    .content {
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+    }
+
+    .theme-toggle-btn {
+      width: 2.5rem !important;
+      height: 2.5rem !important;
+      border-radius: var(--border-radius-full) !important;
+      background: var(--surface-c) !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-color) !important;
+      transition: all var(--transition-duration) var(--transition-timing) !important;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      color: white !important;
+      transform: scale(1.05);
+    }
+
+    /* Main Content */
+    .main-content {
       flex: 1;
-      padding: var(--spacing-4) 0;
-      background-color: var(--surface-b);
+      padding: var(--spacing-6) 0;
+      min-height: calc(100vh - var(--header-height) - var(--footer-height));
     }
 
-    .dark-theme .content {
-      background-color: #1a1a1a;
-    }
-
-    /* Footer Styles */
-    .footer {
-      background-color: var(--surface-a);
-      padding: var(--spacing-3) 0;
+    /* Footer */
+    .app-footer {
+      background: var(--surface-a);
       border-top: 1px solid var(--border-color);
+      padding: var(--spacing-4) 0;
+    }
+
+    .footer-container {
+      max-width: var(--container-max-width);
+      margin: 0 auto;
+      padding: 0 var(--spacing-6);
       text-align: center;
     }
 
-    .dark-theme .footer {
-      background-color: #2a2a2a;
-      border-top-color: #3a3a3a;
-    }
-
-    .footer-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 var(--spacing-6);
-    }
-
-    .footer-copyright {
-      margin: 0;
-      color: var(--text-muted);
+    .copyright {
       font-size: var(--font-size-sm);
+      color: var(--text-color-muted);
+      margin: 0;
     }
 
-    .dark-theme .footer-copyright {
-      color: #888;
+    /* Dark Theme Specific Styles */
+    .dark-theme .app-header {
+      background: rgba(30, 30, 30, 0.9);
+      border-bottom-color: var(--border-color);
+    }
+
+    .dark-theme .app-footer {
+      background: rgba(30, 30, 30, 0.9);
+      border-top-color: var(--border-color);
+    }
+
+    .dark-theme .theme-toggle-btn {
+      background: var(--surface-d) !important;
+      border-color: var(--border-color) !important;
     }
 
     /* Responsive Design */
     @media (max-width: 768px) {
-      .navbar-title {
-        font-size: var(--font-size-lg);
-      }
-
-      .navbar-container,
-      .footer-content {
+      .header-container,
+      .footer-container {
         padding: 0 var(--spacing-4);
       }
 
-      .github-link span {
+      .app-title {
+        font-size: var(--font-size-lg);
+      }
+
+      .brand-text {
         display: none;
+      }
+
+      .logo {
+        gap: var(--spacing-2);
+      }
+
+      .main-content {
+        padding: var(--spacing-4) 0;
       }
     }
 
     @media (max-width: 480px) {
-      .navbar-title {
-        font-size: var(--font-size-base);
+      .app-subtitle {
+        display: none;
       }
 
       .logo-icon {
         font-size: 1.5rem;
-        margin-right: var(--spacing-2);
       }
+    }
+
+    /* Smooth transitions for all interactive elements */
+    .app-container * {
+      transition: color var(--transition-duration) var(--transition-timing),
+                  background-color var(--transition-duration) var(--transition-timing),
+                  border-color var(--transition-duration) var(--transition-timing);
     }
   `]
 })
@@ -232,23 +227,30 @@ export class AppComponent implements OnInit {
   isDarkMode = false;
 
   ngOnInit() {
-    // Load dark mode preference from localStorage
-    const savedTheme = localStorage.getItem('dark-mode');
-    this.isDarkMode = savedTheme === 'true';
+    // Load theme preference from localStorage
+    const savedTheme = localStorage.getItem('theme-preference');
+    this.isDarkMode = savedTheme === 'dark';
     this.applyTheme();
   }
 
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
-    localStorage.setItem('dark-mode', this.isDarkMode.toString());
+    localStorage.setItem('theme-preference', this.isDarkMode ? 'dark' : 'light');
     this.applyTheme();
   }
 
   private applyTheme() {
+    const root = document.documentElement;
+    const body = document.body;
+
     if (this.isDarkMode) {
-      document.body.classList.add('dark-theme');
+      root.classList.add('dark-theme');
+      body.classList.add('dark-theme');
+      root.setAttribute('data-theme', 'dark');
     } else {
-      document.body.classList.remove('dark-theme');
+      root.classList.remove('dark-theme');
+      body.classList.remove('dark-theme');
+      root.setAttribute('data-theme', 'light');
     }
   }
 }

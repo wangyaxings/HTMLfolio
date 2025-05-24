@@ -3,15 +3,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-export interface HtmlFile {
-  filename: string;
-  path: string;
-  title?: string;
-  uploadDate: Date;
-  category?: string;
-  tags?: string[];
-  description?: string;
-}
+export interface HtmlFile {  id?: string;  filename: string;  path: string;  title?: string;  uploadDate: Date;  lastModified?: Date;  category?: string;  tags?: string[];  description?: string;  author?: string;  version?: string;  fileSize?: number;  thumbnailLoaded?: boolean;  thumbnailState?: 'loading' | 'loaded' | 'error';  hasHistory?: boolean;}
 
 export interface Category {
   id: string;
@@ -41,8 +33,9 @@ export class HtmlFileService {
   ];
 
   constructor(private http: HttpClient) {
-    // Load file list from local storage
+    // Load file list and categories from local storage
     this.loadFromLocalStorage();
+    this.loadCategoriesFromLocalStorage();
   }
 
   private loadFromLocalStorage(): void {
@@ -60,6 +53,23 @@ export class HtmlFileService {
       } catch (e) {
         console.error('Unable to parse saved file data', e);
         this.files = [];
+      }
+    }
+  }
+
+  private loadCategoriesFromLocalStorage(): void {
+    const savedCategories = localStorage.getItem('htmlCategories');
+    if (savedCategories) {
+      try {
+        const parsedCategories = JSON.parse(savedCategories);
+        // Merge with default categories, giving priority to saved ones
+        const defaultCategoryIds = this.categories.map(cat => cat.id);
+        const customCategories = parsedCategories.filter((cat: Category) =>
+          !defaultCategoryIds.includes(cat.id)
+        );
+        this.categories = [...this.categories, ...customCategories];
+      } catch (e) {
+        console.error('Unable to parse saved categories data', e);
       }
     }
   }
@@ -166,6 +176,41 @@ export class HtmlFileService {
       this.files.splice(index, 1);
       this.saveToLocalStorage();
     }
+  }
+
+  // Category management methods
+  addCategory(category: Category): void {
+    // Check if category with same id already exists
+    const existingIndex = this.categories.findIndex(cat => cat.id === category.id);
+    if (existingIndex !== -1) {
+      // Update existing category
+      this.categories[existingIndex] = category;
+    } else {
+      // Add new category
+      this.categories.push(category);
+    }
+    this.saveCategoriesToLocalStorage();
+  }
+
+  deleteCategory(categoryId: string): void {
+    const index = this.categories.findIndex(cat => cat.id === categoryId);
+    if (index !== -1) {
+      this.categories.splice(index, 1);
+      this.saveCategoriesToLocalStorage();
+
+      // Update files that had this category to 'other'
+      this.files.forEach(file => {
+        if (file.category === categoryId) {
+          file.category = 'other';
+        }
+      });
+      this.saveToLocalStorage();
+    }
+  }
+
+  // Save categories to local storage
+  private saveCategoriesToLocalStorage(): void {
+    localStorage.setItem('htmlCategories', JSON.stringify(this.categories));
   }
 
   // Save file list to local storage

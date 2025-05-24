@@ -55,6 +55,7 @@ import { TooltipModule } from 'primeng/tooltip';
           <iframe *ngIf="fileUrl && !isLoading"
                  [src]="fileUrl"
                  class="html-frame"
+                 sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
                  (load)="onIframeLoaded()"></iframe>
 
           <!-- Error State -->
@@ -99,17 +100,18 @@ import { TooltipModule } from 'primeng/tooltip';
   styles: [`
     .viewer-wrapper {
       padding: 0;
+      height: calc(100vh - var(--header-height) - var(--footer-height));
     }
 
     .viewer-container {
-      background-color: var(--surface-card);
-      border-radius: var(--card-border-radius);
-      box-shadow: var(--shadow-md);
+      background-color: var(--surface-a);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      height: calc(100vh - var(--header-height) - var(--footer-height) - var(--spacing-8));
-      min-height: 500px;
+      height: 100%;
+      border: 1px solid var(--border-color);
     }
 
     /* Viewer Header */
@@ -117,28 +119,33 @@ import { TooltipModule } from 'primeng/tooltip';
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: var(--spacing-3) var(--spacing-4);
+      padding: var(--spacing-4) var(--spacing-6);
       border-bottom: 1px solid var(--border-color);
-      background-color: var(--surface-a);
+      background: linear-gradient(135deg, var(--surface-a) 0%, var(--surface-b) 100%);
+      backdrop-filter: blur(10px);
     }
 
     .header-left {
       display: flex;
       align-items: center;
+      gap: var(--spacing-4);
     }
 
     .header-left h2 {
-      margin: 0 0 0 var(--spacing-3);
-      padding: 0;
-      font-size: var(--font-size-lg);
-      font-weight: var(--font-weight-medium);
+      margin: 0;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
       color: var(--text-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 400px;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: var(--spacing-1);
+      gap: var(--spacing-2);
     }
 
     /* Viewer Content */
@@ -146,7 +153,7 @@ import { TooltipModule } from 'primeng/tooltip';
       flex: 1;
       overflow: hidden;
       position: relative;
-      background-color: var(--surface-b);
+      background-color: #f8f9fa;
     }
 
     .html-frame {
@@ -154,6 +161,7 @@ import { TooltipModule } from 'primeng/tooltip';
       height: 100%;
       border: none;
       background-color: white;
+      display: block;
     }
 
     /* Loading State */
@@ -167,19 +175,26 @@ import { TooltipModule } from 'primeng/tooltip';
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background-color: var(--surface-b);
-      z-index: 5;
+      background: linear-gradient(135deg, var(--surface-b) 0%, var(--surface-c) 100%);
+      z-index: 10;
     }
 
     .loading-spinner {
-      font-size: 2.5rem;
+      font-size: 3rem;
       color: var(--primary-color);
-      margin-bottom: var(--spacing-3);
+      margin-bottom: var(--spacing-4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
     .loading-state span {
-      color: var(--text-secondary-color);
-      font-size: var(--font-size-base);
+      color: var(--text-color-secondary);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-medium);
     }
 
     /* Error State */
@@ -190,41 +205,47 @@ import { TooltipModule } from 'primeng/tooltip';
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: var(--spacing-8) var(--spacing-4);
-      background-color: var(--surface-b);
+      padding: var(--spacing-12) var(--spacing-6);
+      background: linear-gradient(135deg, var(--surface-b) 0%, var(--surface-c) 100%);
     }
 
     .error-icon {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
-      background-color: #fff3f3;
+      background: linear-gradient(135deg, var(--danger-color-light) 0%, var(--danger-color) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: var(--spacing-4);
+      margin-bottom: var(--spacing-6);
+      box-shadow: var(--shadow-lg);
     }
 
     .error-icon i {
-      font-size: 2.5rem;
-      color: var(--danger-color);
+      font-size: 3rem;
+      color: white;
     }
 
     .error-state h3 {
-      font-size: var(--font-size-xl);
+      margin: 0 0 var(--spacing-3);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
       color: var(--text-color);
-      margin: 0 0 var(--spacing-2);
-      font-weight: var(--font-weight-medium);
     }
 
     .error-state p {
-      color: var(--text-secondary-color);
-      margin: 0 0 var(--spacing-6);
+      margin: 0 0 var(--spacing-8);
+      color: var(--text-color-secondary);
+      font-size: var(--font-size-lg);
+      max-width: 400px;
+      line-height: 1.5;
     }
 
     .error-actions {
       display: flex;
       gap: var(--spacing-3);
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     /* Viewer Footer */
@@ -232,53 +253,162 @@ import { TooltipModule } from 'primeng/tooltip';
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: var(--spacing-2) var(--spacing-4);
-      background-color: var(--surface-c);
+      padding: var(--spacing-3) var(--spacing-6);
       border-top: 1px solid var(--border-color);
+      background: var(--surface-a);
       font-size: var(--font-size-sm);
-      color: var(--text-muted);
     }
 
     .footer-info {
       display: flex;
       align-items: center;
       gap: var(--spacing-2);
+      color: var(--text-color-muted);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .footer-info i {
+      color: var(--primary-color);
+      flex-shrink: 0;
     }
 
     .file-path {
-      font-family: var(--font-family-code);
-      font-size: var(--font-size-xs);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: 'Courier New', monospace;
+      background: var(--surface-c);
+      padding: var(--spacing-1) var(--spacing-2);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
     }
 
-    /* Responsive Adaptation */
+    .footer-actions {
+      flex-shrink: 0;
+    }
+
+    /* Dark Theme Support */
+    .dark-theme .viewer-container {
+      background-color: var(--surface-a);
+      border-color: var(--border-color);
+    }
+
+    .dark-theme .viewer-header {
+      background: linear-gradient(135deg, var(--surface-a) 0%, var(--surface-b) 100%);
+      border-bottom-color: var(--border-color);
+    }
+
+    .dark-theme .viewer-content {
+      background-color: var(--surface-b);
+    }
+
+    .dark-theme .html-frame {
+      background-color: var(--surface-a);
+    }
+
+    .dark-theme .viewer-footer {
+      background: var(--surface-a);
+      border-top-color: var(--border-color);
+    }
+
+    .dark-theme .file-path {
+      background: var(--surface-c);
+      border-color: var(--border-color);
+      color: var(--text-color);
+    }
+
+    /* Dark Theme - 确保图标在dark模式下正常显示 */
+    .dark-theme .loading-spinner,
+    .dark-theme .error-icon i,
+    .dark-theme .footer-info i,
+    .dark-theme .header-actions i,
+    .dark-theme .header-left i {
+      color: inherit;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
-      .viewer-container {
+      .viewer-wrapper {
         height: calc(100vh - var(--header-height) - var(--footer-height) - var(--spacing-4));
       }
 
+      .viewer-header {
+        padding: var(--spacing-3) var(--spacing-4);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-3);
+      }
+
+      .header-left {
+        width: 100%;
+        justify-content: space-between;
+      }
+
       .header-left h2 {
-        max-width: 150px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        max-width: 200px;
+        font-size: var(--font-size-lg);
+      }
+
+      .header-actions {
+        align-self: flex-end;
+      }
+
+      .viewer-footer {
+        padding: var(--spacing-2) var(--spacing-4);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-2);
+      }
+
+      .footer-info {
+        width: 100%;
+      }
+
+      .error-state {
+        padding: var(--spacing-8) var(--spacing-4);
+      }
+
+      .error-icon {
+        width: 80px;
+        height: 80px;
+      }
+
+      .error-icon i {
+        font-size: 2.5rem;
+      }
+
+      .error-state h3 {
+        font-size: var(--font-size-xl);
+      }
+
+      .error-state p {
+        font-size: var(--font-size-base);
       }
 
       .error-actions {
         flex-direction: column;
-        gap: var(--spacing-2);
+        width: 100%;
+        max-width: 300px;
       }
 
-      .viewer-footer {
-        flex-direction: column;
-        gap: var(--spacing-2);
-        align-items: flex-start;
+      .error-actions button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-left h2 {
+        max-width: 150px;
+        font-size: var(--font-size-base);
       }
 
-      .file-path {
-        max-width: 250px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      .loading-spinner {
+        font-size: 2.5rem;
+      }
+
+      .loading-state span {
+        font-size: var(--font-size-base);
       }
     }
   `]
@@ -313,10 +443,18 @@ export class HtmlViewerComponent implements OnInit {
     const file = this.htmlFileService.getFile(filename);
 
     if (file) {
-      // Build file URL and use DomSanitizer for security processing
-      this.rawUrl = `http://localhost:8080${file.path}`;
+      // 确保使用正确的后端端口8080
+      this.rawUrl = `http://localhost:8080/uploads/${file.filename}`;
       this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.rawUrl);
       this.fileTitle = file.title || file.filename;
+
+      // 添加超时机制，确保页面不会一直loading
+      setTimeout(() => {
+        if (this.isLoading) {
+          console.log('Force stop loading after timeout');
+          this.isLoading = false;
+        }
+      }, 5000);
     } else {
       this.fileUrl = null;
       this.fileTitle = null;
