@@ -9,13 +9,33 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       <div class="viewer-container">
         <!-- Viewer Header Toolbar -->
         <div class="viewer-header">
+          <!-- 返回按钮在左侧 -->
           <div class="header-left">
-                        <button pButton pRipple                    icon="pi pi-arrow-left"                    [label]="i18n.t('back')"                    class="p-button-outlined p-button-secondary"                    (click)="goBack()"></button>
+            <button pButton pRipple
+                    icon="pi pi-arrow-left"
+                    [pTooltip]="i18n.t('back')"
+                    tooltipPosition="bottom"
+                    class="p-button-text p-button-lg back-button"
+                    (click)="goBack()"></button>
+          </div>
+
+          <div class="header-center">
             <h2 *ngIf="fileTitle">{{ fileTitle }}</h2>
           </div>
 
           <div class="header-actions" *ngIf="fileUrl">
-                        <button pButton pRipple                    icon="pi pi-copy"                    [pTooltip]="i18n.t('copyPath')"                    tooltipPosition="bottom"                    class="p-button-text p-button-secondary"                    (click)="copyHtmlPath()"></button>            <button pButton pRipple                    icon="pi pi-external-link"                    [pTooltip]="i18n.t('openNewTab')"                    tooltipPosition="bottom"                    class="p-button-text p-button-secondary"                    (click)="openInNewTab()"></button>
+            <button pButton pRipple
+                    icon="pi pi-copy"
+                    [pTooltip]="i18n.t('copyPath')"
+                    tooltipPosition="bottom"
+                    class="p-button-text p-button-secondary"
+                    (click)="copyHtmlPath()"></button>
+            <button pButton pRipple
+                    icon="pi pi-external-link"
+                    [pTooltip]="i18n.t('openNewTab')"
+                    tooltipPosition="bottom"
+                    class="p-button-text p-button-secondary"
+                    (click)="openInNewTab()"></button>
           </div>
         </div>
 
@@ -41,7 +61,20 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
             <div class="error-icon">
               <i class="pi pi-exclamation-circle"></i>
             </div>
-                        <h3>{{ i18n.t('fileNotFound') }}</h3>            <p>{{ i18n.t('fileNotFoundMessage') }}</p>            <div class="error-actions">              <button pButton pRipple                      [label]="i18n.t('goHome')"                      icon="pi pi-home"                      class="p-button-primary"                      (click)="goHome()"></button>              <button pButton pRipple                      [label]="i18n.t('refresh')"                      icon="pi pi-refresh"                      class="p-button-outlined p-button-secondary"                      (click)="reloadPage()"></button>            </div>
+            <h3>{{ i18n.t('fileNotFound') }}</h3>
+            <p>{{ i18n.t('fileNotFoundMessage') }}</p>
+            <div class="error-actions">
+              <button pButton pRipple
+                      [label]="i18n.t('goHome')"
+                      icon="pi pi-home"
+                      class="p-button-primary"
+                      (click)="goHome()"></button>
+              <button pButton pRipple
+                      [label]="i18n.t('refresh')"
+                      icon="pi pi-refresh"
+                      class="p-button-outlined p-button-secondary"
+                      (click)="reloadPage()"></button>
+            </div>
           </div>
         </div>
 
@@ -51,28 +84,45 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
             <i class="pi pi-link"></i>
             <span class="file-path">{{ rawUrl }}</span>
           </div>
-          <div class="footer-actions">
-                        <button pButton pRipple                    [label]="i18n.t('goHome')"                    icon="pi pi-home"                    class="p-button-text p-button-sm"                    (click)="goHome()"></button>
-          </div>
+          <!-- 删除了右下角的Go Home按钮 -->
         </div>
       </div>
     </div>
   `,
   styles: [`
+    /* 确保页面完全无滚动条 */
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
     .viewer-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      margin: 0;
       padding: 0;
-      height: calc(100vh - var(--header-height) - var(--footer-height));
     }
 
     .viewer-container {
+      width: calc(100% - 32px);
+      height: calc(100% - 32px);
+      margin: 16px;
+      display: flex;
+      flex-direction: column;
       background-color: var(--surface-a);
       border-radius: var(--border-radius-lg);
       box-shadow: var(--shadow-lg);
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
       border: 1px solid var(--border-color);
+      box-sizing: border-box;
     }
 
     /* Viewer Header */
@@ -84,15 +134,51 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       border-bottom: 1px solid var(--border-color);
       background: linear-gradient(135deg, var(--surface-a) 0%, var(--surface-b) 100%);
       backdrop-filter: blur(10px);
+      flex-shrink: 0;
+      height: auto;
+      min-height: 60px;
+      box-sizing: border-box;
     }
 
+    /* 左侧返回按钮区域 */
     .header-left {
       display: flex;
       align-items: center;
-      gap: var(--spacing-4);
+      flex-shrink: 0;
+      width: 60px;
     }
 
-    .header-left h2 {
+    .header-left .back-button {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      background: transparent !important;
+      border: none !important;
+      color: var(--text-color) !important;
+    }
+
+    .header-left .back-button:hover {
+      background: var(--highlight-bg) !important;
+      transform: translateX(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-left .back-button:focus {
+      box-shadow: 0 0 0 2px var(--focus-ring);
+    }
+
+    .header-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 var(--spacing-4);
+    }
+
+    .header-center h2 {
       margin: 0;
       font-size: var(--font-size-xl);
       font-weight: var(--font-weight-semibold);
@@ -101,12 +187,24 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 400px;
+      text-align: center;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
       gap: var(--spacing-2);
+      flex-shrink: 0;
+      width: 100px;
+      justify-content: flex-end;
+    }
+
+    .header-actions button {
+      color: var(--text-color) !important;
+    }
+
+    .header-actions button:hover {
+      background: var(--highlight-bg) !important;
     }
 
     /* Viewer Content */
@@ -115,6 +213,8 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       overflow: hidden;
       position: relative;
       background-color: #f8f9fa;
+      min-height: 0;
+      box-sizing: border-box;
     }
 
     .html-frame {
@@ -123,6 +223,9 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       border: none;
       background-color: white;
       display: block;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     /* Loading State */
@@ -138,6 +241,7 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       justify-content: center;
       background: linear-gradient(135deg, var(--surface-b) 0%, var(--surface-c) 100%);
       z-index: 10;
+      box-sizing: border-box;
     }
 
     .loading-spinner {
@@ -160,7 +264,11 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
 
     /* Error State */
     .error-state {
-      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -168,6 +276,7 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       text-align: center;
       padding: var(--spacing-12) var(--spacing-6);
       background: linear-gradient(135deg, var(--surface-b) 0%, var(--surface-c) 100%);
+      box-sizing: border-box;
     }
 
     .error-icon {
@@ -184,7 +293,7 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
 
     .error-icon i {
       font-size: 3rem;
-      color: white;
+      color: white !important;
     }
 
     .error-state h3 {
@@ -213,11 +322,15 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
     .viewer-footer {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       padding: var(--spacing-3) var(--spacing-6);
       border-top: 1px solid var(--border-color);
       background: var(--surface-a);
       font-size: var(--font-size-sm);
+      flex-shrink: 0;
+      height: auto;
+      min-height: 60px;
+      box-sizing: border-box;
     }
 
     .footer-info {
@@ -230,7 +343,7 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
     }
 
     .footer-info i {
-      color: var(--primary-color);
+      color: var(--primary-color) !important;
       flex-shrink: 0;
     }
 
@@ -243,13 +356,10 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       padding: var(--spacing-1) var(--spacing-2);
       border-radius: var(--border-radius);
       border: 1px solid var(--border-color);
+      color: var(--text-color);
     }
 
-    .footer-actions {
-      flex-shrink: 0;
-    }
-
-    /* Dark Theme Support */
+    /* Dark Theme Support - 明确指定所有图标颜色 */
     .dark-theme .viewer-container {
       background-color: var(--surface-a);
       border-color: var(--border-color);
@@ -279,51 +389,86 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
       color: var(--text-color);
     }
 
-    /* Dark Theme - 确保图标在dark模式下正常显示 */
-    .dark-theme .loading-spinner,
-    .dark-theme .error-icon i,
-    .dark-theme .footer-info i,
-    .dark-theme .header-actions i,
-    .dark-theme .header-left i {
-      color: inherit;
+    /* Dark Theme - 明确设置所有图标和按钮的颜色 */
+    .dark-theme .header-left .back-button {
+      color: var(--text-color) !important;
+    }
+
+    .dark-theme .header-left .back-button:hover {
+      background: var(--highlight-bg) !important;
+      color: var(--text-color) !important;
+    }
+
+    .dark-theme .header-actions button {
+      color: var(--text-color) !important;
+    }
+
+    .dark-theme .header-actions button:hover {
+      background: var(--highlight-bg) !important;
+      color: var(--text-color) !important;
+    }
+
+    .dark-theme .loading-spinner {
+      color: var(--primary-color) !important;
+    }
+
+    .dark-theme .footer-info i {
+      color: var(--primary-color) !important;
+    }
+
+    /* 确保所有PrimeNG按钮图标在dark模式下正确显示 */
+    .dark-theme .p-button-text {
+      color: var(--text-color) !important;
+    }
+
+    .dark-theme .p-button-text:hover {
+      background: var(--highlight-bg) !important;
+      color: var(--text-color) !important;
+    }
+
+    .dark-theme .p-button-text:focus {
+      box-shadow: 0 0 0 2px var(--focus-ring) !important;
     }
 
     /* Responsive Design */
     @media (max-width: 768px) {
-      .viewer-wrapper {
-        height: calc(100vh - var(--header-height) - var(--footer-height) - var(--spacing-4));
+      .viewer-container {
+        margin: 8px;
+        width: calc(100% - 16px);
+        height: calc(100% - 16px);
       }
 
       .viewer-header {
         padding: var(--spacing-3) var(--spacing-4);
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-3);
+        min-height: 70px;
       }
 
       .header-left {
-        width: 100%;
-        justify-content: space-between;
+        width: 50px;
       }
 
-      .header-left h2 {
+      .header-left .back-button {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+
+      .header-center {
+        margin: 0 var(--spacing-2);
+      }
+
+      .header-center h2 {
         max-width: 200px;
         font-size: var(--font-size-lg);
       }
 
       .header-actions {
-        align-self: flex-end;
+        width: 80px;
       }
 
       .viewer-footer {
         padding: var(--spacing-2) var(--spacing-4);
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-2);
-      }
-
-      .footer-info {
-        width: 100%;
+        min-height: 60px;
       }
 
       .error-state {
@@ -359,8 +504,8 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
     }
 
     @media (max-width: 480px) {
-      .header-left h2 {
-        max-width: 150px;
+      .header-center h2 {
+        max-width: 120px;
         font-size: var(--font-size-base);
       }
 
@@ -370,6 +515,20 @@ import { Component, OnInit } from '@angular/core';import { CommonModule } from '
 
       .loading-state span {
         font-size: var(--font-size-base);
+      }
+
+      .header-left {
+        width: 40px;
+      }
+
+      .header-left .back-button {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+      }
+
+      .header-actions {
+        width: 60px;
       }
     }
   `]

@@ -120,13 +120,13 @@ const translations: { [key: string]: TranslationKeys } = {
   en: {
     // Header
     appTitle: 'HTML Viewer',
-    appSubtitle: 'Organize with style',
+    appSubtitle: 'Preview & Organize',
     toggleTheme: 'Toggle theme',
     language: 'Language',
 
     // Hero Section
-    heroTitle: 'Discover the world\'s top designers',
-    heroSubtitle: 'Explore work from the most talented and accomplished designers ready to take on your next project',
+    heroTitle: 'Organize your HTML projects with style',
+    heroSubtitle: 'Upload, preview, and manage your HTML files with powerful categorization and search features',
     dropFiles: 'Drop HTML files here',
     clickToBrowse: 'or click to browse',
 
@@ -231,13 +231,13 @@ const translations: { [key: string]: TranslationKeys } = {
   zh: {
     // Header
     appTitle: 'HTML 查看器',
-    appSubtitle: '优雅地整理',
+    appSubtitle: '预览与整理',
     toggleTheme: '切换主题',
     language: '语言',
 
     // Hero Section
-    heroTitle: '发现世界顶级设计师',
-    heroSubtitle: '探索最有才华和成就的设计师作品，为您的下一个项目做好准备',
+    heroTitle: '优雅地管理你的 HTML 项目',
+    heroSubtitle: '上传、预览和管理你的 HTML 文件，配备强大的分类和搜索功能',
     dropFiles: '拖拽 HTML 文件到这里',
     clickToBrowse: '或点击浏览',
 

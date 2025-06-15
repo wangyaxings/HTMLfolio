@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
@@ -8,6 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 import { I18nService, Language } from './services/i18n.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -21,9 +22,9 @@ import { I18nService, Language } from './services/i18n.service';
         <div class="header-container">
           <div class="brand-section">
             <div class="logo">
-              <i class="pi pi-file-o logo-icon"></i>
-              <div class="brand-text">
-                <h1 class="app-title">{{ i18n.t('appTitle') }}</h1>
+              <img src="assets/HTMLfolio.png" alt="HTMLfolio Icon" class="logo-icon">
+              <div class="brand-content">
+                <img src="assets/HTMLfolioText.png" alt="HTMLfolio" class="logo-text">
                 <span class="app-subtitle">{{ i18n.t('appSubtitle') }}</span>
               </div>
             </div>
@@ -79,7 +80,7 @@ import { I18nService, Language } from './services/i18n.service';
       </header>
 
       <!-- Main Content -->
-      <main class="main-content">
+      <main class="main-content" [class.viewer-page]="router.url.startsWith('/view')">
         <router-outlet></router-outlet>
       </main>
 
@@ -128,6 +129,8 @@ import { I18nService, Language } from './services/i18n.service';
       --font-weight-medium: 500;
       --font-weight-bold: 700;
       --border-radius-full: 9999px;
+      --border-radius-md: 0.75rem;
+      --spacing-1: 0.25rem;
     }
 
     /* Dark theme custom properties */
@@ -180,25 +183,42 @@ import { I18nService, Language } from './services/i18n.service';
       display: flex;
       align-items: center;
       gap: var(--spacing-3);
+      cursor: pointer;
+      transition: all var(--transition-duration) var(--transition-timing);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-1);
+    }
+
+    .logo:hover {
+      background: var(--surface-b);
+      transform: scale(1.02);
     }
 
     .logo-icon {
-      font-size: 2rem;
-      color: var(--primary-color);
-      filter: drop-shadow(0 2px 4px rgba(var(--primary-color-rgb), 0.3));
+      width: 2rem;
+      height: 2rem;
+      transition: transform var(--transition-duration) var(--transition-timing);
     }
 
-    .brand-text {
+    .logo:hover .logo-icon {
+      transform: rotate(5deg);
+    }
+
+    .brand-content {
       display: flex;
       flex-direction: column;
     }
 
-    .app-title {
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-bold);
-      color: var(--text-color);
-      margin: 0;
-      line-height: 1.2;
+    .logo-text {
+      width: 10rem;
+      height: 2rem;
+      object-fit: contain;
+      filter: contrast(1.1);
+      transition: filter var(--transition-duration) var(--transition-timing);
+    }
+
+    .logo:hover .logo-text {
+      filter: contrast(1.2) brightness(1.05);
     }
 
     .app-subtitle {
@@ -274,8 +294,19 @@ import { I18nService, Language } from './services/i18n.service';
     /* Main Content */
     .main-content {
       flex: 1;
-      padding: var(--spacing-6) 0;
       min-height: calc(100vh - var(--header-height) - var(--footer-height));
+    }
+
+    /* 普通页面的padding */
+    .main-content:not(.viewer-page) {
+      padding: var(--spacing-6) 0;
+    }
+
+    /* viewer页面移除padding，使其完全填充 */
+    .main-content.viewer-page {
+      padding: 0;
+      height: calc(100vh - var(--header-height) - var(--footer-height));
+      overflow: hidden;
     }
 
     /* Footer Styles */
@@ -341,12 +372,13 @@ import { I18nService, Language } from './services/i18n.service';
         padding: 0 var(--spacing-4);
       }
 
-      .app-title {
-        font-size: var(--font-size-lg);
+      .logo-text {
+        width: 8rem;
+        height: 1.5rem;
       }
 
-      .brand-text {
-        display: none;
+      .brand-content {
+        display: flex;
       }
 
       .logo {
@@ -372,7 +404,13 @@ import { I18nService, Language } from './services/i18n.service';
       }
 
       .logo-icon {
-        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      .logo-text {
+        width: 6rem;
+        height: 1.2rem;
       }
 
       .language-item span:last-child {
@@ -430,16 +468,35 @@ export class AppComponent implements OnInit {
   languages: Language[] = [];
   selectedLanguage = 'en';
 
-  constructor(public i18n: I18nService) {
+  constructor(public i18n: I18nService, public router: Router) {
     this.languages = this.i18n.getLanguages();
     this.selectedLanguage = this.i18n.getCurrentLanguage();
   }
 
   ngOnInit() {
-    // Load theme preference from localStorage
-    const savedTheme = localStorage.getItem('theme-preference');
+    this.languages = this.i18n.getLanguages();
+    this.selectedLanguage = this.i18n.getCurrentLanguage();
+
+    const savedTheme = localStorage.getItem('theme');
     this.isDarkMode = savedTheme === 'dark';
     this.applyTheme();
+
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      const url = event.url;
+      if (url.startsWith('/view')) {
+        document.body.classList.add('viewer-page');
+      } else {
+        document.body.classList.remove('viewer-page');
+      }
+    });
+
+    // 初始检查当前路由
+    const currentUrl = this.router.url;
+    if (currentUrl.startsWith('/view')) {
+      document.body.classList.add('viewer-page');
+    }
   }
 
   toggleDarkMode() {

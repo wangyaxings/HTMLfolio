@@ -49,9 +49,9 @@ export class HtmlFileService {
   ];
 
   constructor(private http: HttpClient) {
-    // Initialize files and categories from server
-    this.refreshFilesFromServer();
-    this.refreshCategoriesFromServer();
+    // 首先从本地存储加载备份数据
+    this.loadFromLocalStorage();
+    this.loadCategoriesFromLocalStorage();
   }
 
   private loadFromLocalStorage(): void {
@@ -161,8 +161,7 @@ export class HtmlFileService {
       .pipe(
         tap((response: any) => {
           console.log('Upload response:', response);
-          // Refresh files from server to get updated list
-          this.refreshFilesFromServer();
+          // 不在这里自动刷新，改为在组件中统一处理
         }),
         catchError(this.handleError)
       );
@@ -230,22 +229,28 @@ export class HtmlFileService {
   }
 
   // Refresh files from server
-  private refreshFilesFromServer(): void {
-    this.http.get<HtmlFile[]>(`${this.apiUrl}/files`)
-      .pipe(catchError(this.handleError))
-      .subscribe({
-        next: (files) => {
+  private refreshFilesFromServer(): Observable<HtmlFile[]> {
+    console.log('Refreshing files from server...');
+    return this.http.get<HtmlFile[]>(`${this.apiUrl}/files`)
+      .pipe(
+        tap((files) => {
+          console.log('Files loaded from server:', files);
           this.files = files.map(file => ({
             ...file,
             uploadDate: new Date(file.uploadDate),
-            tags: file.tags || []
+            tags: file.tags || [],
+            category: file.category || 'other'
           }));
-        },
-        error: (error) => {
-          console.error('Failed to load files from server:', error);
-          this.loadFromLocalStorage(); // Fallback to local storage
-        }
-      });
+          // Save to local storage as backup
+          this.saveToLocalStorage();
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  // Force refresh files from server (public method) - now returns Observable
+  refreshFiles(): Observable<HtmlFile[]> {
+    return this.refreshFilesFromServer();
   }
 
   // Refresh categories from server

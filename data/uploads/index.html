@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Status Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #faf9f5;
+        color: #141413;
+      }
+
+      :root {
+        --color-green: #76ad2a;
+        --color-yellow: #faa72a;
+        --color-orange: #e86235;
+        --color-red: #e04343;
+        --color-blue: #2c84db;
+        --color-border: #dedcd1;
+        --color-text-secondary: #87867f;
+        --color-link: #141413;
+        --bar-width-ratio: 1.618;
+        --total-units: calc(90 * var(--bar-width-ratio) + 89);
+        --gap-percentage: calc(100% / var(--total-units));
+        --bar-width-percentage: calc(
+          var(--gap-percentage) * var(--bar-width-ratio)
+        );
+      }
+
+      #tooltip {
+        background-color: #faf9f5;
+        border: 1px solid var(--color-border);
+        color: var(--color-text-secondary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        width: auto;
+        min-width: 280px;
+        max-width: 420px;
+        font-size: 0.75rem;
+      }
+      .tooltip-arrow {
+        position: absolute;
+        width: 10px;
+        height: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        overflow: hidden;
+      }
+      .tooltip-arrow::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #faf9f5 transparent transparent transparent;
+        top: 0;
+        left: 0;
+        filter: drop-shadow(0 -1px 0px var(--color-border));
+      }
+      .tooltip-arrow.arrow-up {
+        bottom: auto;
+        top: -5px;
+      }
+      .tooltip-arrow.arrow-up::after {
+        border-color: transparent transparent #faf9f5 transparent;
+        filter: drop-shadow(0 1px 0px var(--color-border));
+      }
+      .tooltip-arrow.arrow-down {
+        bottom: -5px;
+        top: auto;
+      }
+      .tooltip-arrow.arrow-down::after {
+        border-color: #faf9f5 transparent transparent transparent;
+        filter: drop-shadow(0 -1px 0px var(--color-border));
+      }
+
+      #tooltip .tooltip-date {
+        color: var(--color-text);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      #tooltip .outage-field {
+        background-color: rgba(222, 220, 209, 0.3);
+        padding: 0.15rem 0.4rem;
+        margin-bottom: 0.4rem;
+        border-radius: 3px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #tooltip .outage-label {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      #tooltip .outage-status-text {
+        white-space: nowrap;
+        margin-left: 0.5rem;
+      }
+      #tooltip .outage-duration {
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+      }
+      #tooltip .outage-duration span {
+        margin-left: 0.15rem;
+        white-space: nowrap;
+      }
+      #tooltip .related-header {
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        color: var(--color-text-secondary);
+        margin-bottom: 0.25rem;
+      }
+      #tooltip .related-event-link {
+        color: var(--color-link);
+        text-decoration: none;
+        font-size: 0.875rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #tooltip .related-event-link:hover {
+        text-decoration: underline;
+      }
+      #tooltip .no-outages-msg,
+      #tooltip .no-related-msg,
+      #tooltip .operational-msg {
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        white-space: nowrap;
+      }
+      #tooltip .operational-msg {
+        color: var(--color-green);
+        font-weight: 500;
+      }
+
+      .status-bar-operational {
+        background-color: var(--color-green);
+      }
+      .status-bar-degraded {
+        background-color: var(--color-yellow);
+      }
+      .status-bar-partial {
+        background-color: var(--color-orange);
+      }
+      .status-bar-outage {
+        background-color: var(--color-red);
+      }
+      .status-bar-maintenance {
+        background-color: var(--color-blue);
+      }
+
+      .component-status-operational {
+        color: var(--color-green);
+      }
+      .component-status-degraded {
+        color: var(--color-yellow);
+      }
+      .component-status-partial {
+        color: var(--color-orange);
+      }
+      .component-status-outage {
+        color: var(--color-red);
+      }
+      .component-status-maintenance {
+        color: var(--color-blue);
+      }
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      .status-bar {
+        width: var(--bar-width-percentage);
+        margin-right: var(--gap-percentage);
+        transition: filter 0.15s ease-in-out;
+      }
+      .status-bar:last-child {
+        margin-right: 0;
+      }
+      .status-bar:hover {
+        filter: brightness(1.1);
+      }
+    </style>
+  </head>
+  <body class="p-4 sm:p-8 bg-[#FAF9F5]">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-right mb-6">
+        <span class="text-sm text-[var(--color-text-secondary)]"
+          >Uptime over the past 90 days.</span
+        >
+        <a href="#" class="text-sm text-[var(--color-link)] hover:underline"
+          >View historical uptime.</a
+        >
+      </div>
+
+      <div class="space-y-6">
+        <div
+          class="bg-white p-4 sm:p-6 rounded-md border border-[var(--color-border)] shadow-sm"
+        >
+          <div class="flex justify-between items-start mb-3">
+            <span
+              class="text-base sm:text-lg font-medium text-[var(--color-text)]"
+              >claude.ai</span
+            >
+            <span class="text-sm font-medium component-status-operational"
+              >Operational</span
+            >
+          </div>
+          <div class="relative status-bars-container" data-service="claude.ai">
+            <div class="flex h-8 sm:h-10 overflow-hidden no-scrollbar">
+              <script>
+                const container1 = document.currentScript.parentElement;
+                const statusData1 = [
+                  { status: "operational", days: 20 },
+                  {
+                    status: "degraded",
+                    date: "Apr 10, 2025",
+                    type: "Degraded Performance",
+                    duration: "30 mins",
+                    related: "Increased request latency",
+                  },
+                  { status: "operational", days: 15 },
+                  {
+                    status: "outage",
+                    date: "Mar 25, 2025",
+                    type: "Major Outage",
+                    duration: "1 hr 15 mins",
+                    related: "API inaccessible",
+                  },
+                  { status: "operational", days: 10 },
+                  {
+                    status: "partial",
+                    date: "Mar 15, 2025",
+                    type: "Partial Outage",
+                    duration: "45 mins",
+                    related: "Slow response for some features",
+                  },
+                  { status: "operational", days: 41 },
+                ];
+                let currentDate1 = new Date("2025-04-26");
+                let dayCounter1 = 0;
+                const processedData1 = [];
+                statusData1.forEach((item) => {
+                  const count = item.days || 1;
+                  for (let i = 0; i < count; i++) {
+                    const dayIndex = 89 - dayCounter1;
+                    const dateForDay = new Date(currentDate1);
+                    dateForDay.setDate(currentDate1.getDate() - dayCounter1);
+                    const formattedDate = dateForDay.toLocaleDateString(
+                      "en-US",
+                      { month: "short", day: "numeric", year: "numeric" }
+                    );
+                    processedData1[dayIndex] = {
+                      status: item.status,
+                      date: item.date || formattedDate,
+                      type: item.type || "Operational",
+                      duration: item.duration,
+                      related: item.related,
+                    };
+                    dayCounter1++;
+                  }
+                });
+                for (let i = 0; i < 90; i++) {
+                  const item = processedData1[i] || {
+                    status: "operational",
+                    date: new Date(
+                      new Date("2025-04-26").setDate(
+                        new Date("2025-04-26").getDate() - (89 - i)
+                      )
+                    ).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }),
+                    type: "Operational",
+                  };
+                  let colorClass = "status-bar-operational";
+                  if (item.status === "degraded")
+                    colorClass = "status-bar-degraded";
+                  else if (item.status === "partial")
+                    colorClass = "status-bar-partial";
+                  else if (item.status === "outage")
+                    colorClass = "status-bar-outage";
+                  else if (item.status === "maintenance")
+                    colorClass = "status-bar-maintenance";
+                  const bar = document.createElement("div");
+                  bar.className = `h-full ${colorClass} status-bar cursor-pointer`;
+                  bar.setAttribute("data-date", item.date);
+                  bar.setAttribute("data-type", item.type);
+                  bar.setAttribute("data-status", item.status);
+                  if (item.duration)
+                    bar.setAttribute("data-duration", item.duration);
+                  if (item.related)
+                    bar.setAttribute("data-related", item.related);
+                  container1.appendChild(bar);
+                }
+              </script>
+            </div>
+          </div>
+          <div
+            class="flex justify-between items-center mt-2 text-xs text-[var(--color-text-secondary)]"
+          >
+            <span>90 days ago</span>
+            <div class="flex items-center flex-grow mx-4">
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+              <span class="font-medium text-center px-2 whitespace-nowrap"
+                >99.44 % uptime</span
+              >
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+            </div>
+            <span>Today</span>
+          </div>
+        </div>
+
+        <div
+          class="bg-white p-4 sm:p-6 rounded-md border border-[var(--color-border)] shadow-sm"
+        >
+          <div class="flex justify-between items-start mb-3">
+            <span
+              class="text-base sm:text-lg font-medium text-[var(--color-text)]"
+              >console.anthropic.com</span
+            >
+            <span class="text-sm font-medium component-status-operational"
+              >Operational</span
+            >
+          </div>
+          <div
+            class="relative status-bars-container"
+            data-service="console.anthropic.com"
+          >
+            <div class="flex h-8 sm:h-10 overflow-hidden no-scrollbar">
+              <script>
+                const container2 = document.currentScript.parentElement;
+                const statusData2 = [
+                  { status: "operational", days: 5 },
+                  {
+                    status: "degraded",
+                    date: "Apr 22, 2025",
+                    type: "Degraded Performance",
+                    duration: "1 hr",
+                    related: "Console loading slowly",
+                  },
+                  { status: "operational", days: 25 },
+                  {
+                    status: "outage",
+                    date: "Mar 30, 2025",
+                    type: "Major Outage",
+                    duration: "2 hr 5 mins",
+                    related: "Login service unavailable",
+                  },
+                  { status: "operational", days: 10 },
+                  {
+                    status: "partial",
+                    date: "Mar 18, 2025",
+                    type: "Partial Outage",
+                    duration: "20 mins",
+                    related: "Some data updates delayed",
+                  },
+                  { status: "operational", days: 10 },
+                  {
+                    status: "outage",
+                    date: "Mar 3, 2025",
+                    type: "Major Outage",
+                    duration: "1 hr 40 mins",
+                    related: "Elevated error rates on requests",
+                  },
+                  { status: "operational", days: 36 },
+                ];
+                let currentDate2 = new Date("2025-04-26");
+                let dayCounter2 = 0;
+                const processedData2 = [];
+                statusData2.forEach((item) => {
+                  const count = item.days || 1;
+                  for (let i = 0; i < count; i++) {
+                    const dayIndex = 89 - dayCounter2;
+                    const dateForDay = new Date(currentDate2);
+                    dateForDay.setDate(currentDate2.getDate() - dayCounter2);
+                    const formattedDate = dateForDay.toLocaleDateString(
+                      "en-US",
+                      { month: "short", day: "numeric", year: "numeric" }
+                    );
+                    processedData2[dayIndex] = {
+                      status: item.status,
+                      date: item.date || formattedDate,
+                      type: item.type || "Operational",
+                      duration: item.duration,
+                      related: item.related,
+                    };
+                    dayCounter2++;
+                  }
+                });
+                for (let i = 0; i < 90; i++) {
+                  const item = processedData2[i] || {
+                    status: "operational",
+                    date: new Date(
+                      new Date("2025-04-26").setDate(
+                        new Date("2025-04-26").getDate() - (89 - i)
+                      )
+                    ).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }),
+                    type: "Operational",
+                  };
+                  let colorClass = "status-bar-operational";
+                  if (item.status === "degraded")
+                    colorClass = "status-bar-degraded";
+                  else if (item.status === "partial")
+                    colorClass = "status-bar-partial";
+                  else if (item.status === "outage")
+                    colorClass = "status-bar-outage";
+                  else if (item.status === "maintenance")
+                    colorClass = "status-bar-maintenance";
+                  const bar = document.createElement("div");
+                  bar.className = `h-full ${colorClass} status-bar cursor-pointer`;
+                  bar.setAttribute("data-date", item.date);
+                  bar.setAttribute("data-type", item.type);
+                  bar.setAttribute("data-status", item.status);
+                  if (item.duration)
+                    bar.setAttribute("data-duration", item.duration);
+                  if (item.related)
+                    bar.setAttribute("data-related", item.related);
+                  container2.appendChild(bar);
+                }
+              </script>
+            </div>
+          </div>
+          <div
+            class="flex justify-between items-center mt-2 text-xs text-[var(--color-text-secondary)]"
+          >
+            <span>90 days ago</span>
+            <div class="flex items-center flex-grow mx-4">
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+              <span class="font-medium text-center px-2 whitespace-nowrap"
+                >98.80 % uptime</span
+              >
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+            </div>
+            <span>Today</span>
+          </div>
+        </div>
+
+        <div
+          class="bg-white p-4 sm:p-6 rounded-md border border-[var(--color-border)] shadow-sm"
+        >
+          <div class="flex justify-between items-start mb-3">
+            <span
+              class="text-base sm:text-lg font-medium text-[var(--color-text)]"
+              >api.anthropic.com</span
+            >
+            <span class="text-sm font-medium component-status-operational"
+              >Operational</span
+            >
+          </div>
+          <div
+            class="relative status-bars-container"
+            data-service="api.anthropic.com"
+          >
+            <div class="flex h-8 sm:h-10 overflow-hidden no-scrollbar">
+              <script>
+                const container3 = document.currentScript.parentElement;
+                const statusData3 = [
+                  { status: "operational", days: 60 },
+                  {
+                    status: "outage",
+                    date: "Mar 3, 2025",
+                    type: "Major Outage",
+                    duration: "1 hr 40 mins",
+                    related: "Elevated error rates on requests",
+                  },
+                  { status: "operational", days: 29 },
+                ];
+                let currentDate3 = new Date("2025-04-26");
+                let dayCounter3 = 0;
+                const processedData3 = [];
+                statusData3.forEach((item) => {
+                  const count = item.days || 1;
+                  for (let i = 0; i < count; i++) {
+                    const dayIndex = 89 - dayCounter3;
+                    const dateForDay = new Date(currentDate3);
+                    dateForDay.setDate(currentDate3.getDate() - dayCounter3);
+                    const formattedDate = dateForDay.toLocaleDateString(
+                      "en-US",
+                      { month: "short", day: "numeric", year: "numeric" }
+                    );
+                    processedData3[dayIndex] = {
+                      status: item.status,
+                      date: item.date || formattedDate,
+                      type: item.type || "Operational",
+                      duration: item.duration,
+                      related: item.related,
+                    };
+                    dayCounter3++;
+                  }
+                });
+                for (let i = 0; i < 90; i++) {
+                  const item = processedData3[i] || {
+                    status: "operational",
+                    date: new Date(
+                      new Date("2025-04-26").setDate(
+                        new Date("2025-04-26").getDate() - (89 - i)
+                      )
+                    ).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }),
+                    type: "Operational",
+                  };
+                  let colorClass = "status-bar-operational";
+                  if (item.status === "degraded")
+                    colorClass = "status-bar-degraded";
+                  else if (item.status === "partial")
+                    colorClass = "status-bar-partial";
+                  else if (item.status === "outage")
+                    colorClass = "status-bar-outage";
+                  else if (item.status === "maintenance")
+                    colorClass = "status-bar-maintenance";
+                  const bar = document.createElement("div");
+                  bar.className = `h-full ${colorClass} status-bar cursor-pointer`;
+                  bar.setAttribute("data-date", item.date);
+                  bar.setAttribute("data-type", item.type);
+                  bar.setAttribute("data-status", item.status);
+                  if (item.duration)
+                    bar.setAttribute("data-duration", item.duration);
+                  if (item.related)
+                    bar.setAttribute("data-related", item.related);
+                  container3.appendChild(bar);
+                }
+              </script>
+            </div>
+          </div>
+          <div
+            class="flex justify-between items-center mt-2 text-xs text-[var(--color-text-secondary)]"
+          >
+            <span>90 days ago</span>
+            <div class="flex items-center flex-grow mx-4">
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+              <span class="font-medium text-center px-2 whitespace-nowrap"
+                >99.90 % uptime</span
+              >
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+            </div>
+            <span>Today</span>
+          </div>
+        </div>
+
+        <div
+          class="bg-white p-4 sm:p-6 rounded-md border border-[var(--color-border)] shadow-sm"
+        >
+          <div class="flex justify-between items-start mb-3">
+            <span
+              class="text-base sm:text-lg font-medium text-[var(--color-text)]"
+              >api.anthropic.com - Beta Features</span
+            >
+            <span class="text-sm font-medium component-status-operational"
+              >Operational</span
+            >
+          </div>
+          <div
+            class="relative status-bars-container"
+            data-service="api.anthropic.com - Beta Features"
+          >
+            <div class="flex h-8 sm:h-10 overflow-hidden no-scrollbar">
+              <script>
+                const container4 = document.currentScript.parentElement;
+                const statusData4 = [
+                  { status: "operational", days: 88 },
+                  {
+                    status: "degraded",
+                    date: "Feb 15, 2025",
+                    type: "Brief Interruption",
+                    duration: "5 mins",
+                    related: "New feature testing fluctuation",
+                  },
+                  { status: "operational", days: 1 },
+                ];
+                let currentDate4 = new Date("2025-04-26");
+                let dayCounter4 = 0;
+                const processedData4 = [];
+                statusData4.forEach((item) => {
+                  const count = item.days || 1;
+                  for (let i = 0; i < count; i++) {
+                    const dayIndex = 89 - dayCounter4;
+                    const dateForDay = new Date(currentDate4);
+                    dateForDay.setDate(currentDate4.getDate() - dayCounter4);
+                    const formattedDate = dateForDay.toLocaleDateString(
+                      "en-US",
+                      { month: "short", day: "numeric", year: "numeric" }
+                    );
+                    processedData4[dayIndex] = {
+                      status: item.status,
+                      date: item.date || formattedDate,
+                      type: item.type || "Operational",
+                      duration: item.duration,
+                      related: item.related,
+                    };
+                    dayCounter4++;
+                  }
+                });
+                for (let i = 0; i < 90; i++) {
+                  const item = processedData4[i] || {
+                    status: "operational",
+                    date: new Date(
+                      new Date("2025-04-26").setDate(
+                        new Date("2025-04-26").getDate() - (89 - i)
+                      )
+                    ).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }),
+                    type: "Operational",
+                  };
+                  let colorClass = "status-bar-operational";
+                  if (item.status === "degraded")
+                    colorClass = "status-bar-degraded";
+                  else if (item.status === "partial")
+                    colorClass = "status-bar-partial";
+                  else if (item.status === "outage")
+                    colorClass = "status-bar-outage";
+                  else if (item.status === "maintenance")
+                    colorClass = "status-bar-maintenance";
+                  const bar = document.createElement("div");
+                  bar.className = `h-full ${colorClass} status-bar cursor-pointer`;
+                  bar.setAttribute("data-date", item.date);
+                  bar.setAttribute("data-type", item.type);
+                  bar.setAttribute("data-status", item.status);
+                  if (item.duration)
+                    bar.setAttribute("data-duration", item.duration);
+                  if (item.related)
+                    bar.setAttribute("data-related", item.related);
+                  container4.appendChild(bar);
+                }
+              </script>
+            </div>
+          </div>
+          <div
+            class="flex justify-between items-center mt-2 text-xs text-[var(--color-text-secondary)]"
+          >
+            <span>90 days ago</span>
+            <div class="flex items-center flex-grow mx-4">
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+              <span class="font-medium text-center px-2 whitespace-nowrap"
+                >99.97 % uptime</span
+              >
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+            </div>
+            <span>Today</span>
+          </div>
+        </div>
+
+        <div
+          class="bg-white p-4 sm:p-6 rounded-md border border-[var(--color-border)] shadow-sm"
+        >
+          <div class="flex justify-between items-start mb-3">
+            <span
+              class="text-base sm:text-lg font-medium text-[var(--color-text)]"
+              >anthropic.com</span
+            >
+            <span class="text-sm font-medium component-status-operational"
+              >Operational</span
+            >
+          </div>
+          <div
+            class="relative status-bars-container"
+            data-service="anthropic.com"
+          >
+            <div class="flex h-8 sm:h-10 overflow-hidden no-scrollbar">
+              <script>
+                const container5 = document.currentScript.parentElement;
+                let currentDate5 = new Date("2025-04-26");
+                for (let i = 0; i < 90; i++) {
+                  const dateForDay = new Date(currentDate5);
+                  dateForDay.setDate(currentDate5.getDate() - (89 - i));
+                  const formattedDate = dateForDay.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  });
+                  const bar = document.createElement("div");
+                  bar.className =
+                    "h-full status-bar-operational status-bar cursor-pointer";
+                  bar.setAttribute("data-date", formattedDate);
+                  bar.setAttribute("data-type", "Operational");
+                  bar.setAttribute("data-status", "operational");
+                  container5.appendChild(bar);
+                }
+              </script>
+            </div>
+          </div>
+          <div
+            class="flex justify-between items-center mt-2 text-xs text-[var(--color-text-secondary)]"
+          >
+            <span>90 days ago</span>
+            <div class="flex items-center flex-grow mx-4">
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+              <span class="font-medium text-center px-2 whitespace-nowrap"
+                >100 % uptime</span
+              >
+              <span
+                class="flex-grow h-px bg-[var(--color-text-secondary)] opacity-50"
+              ></span>
+            </div>
+            <span>Today</span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="tooltip"
+        class="absolute hidden p-2 text-sm font-normal rounded-md"
+        role="tooltip"
+      >
+        <div class="tooltip-arrow"></div>
+        <div id="tooltip-date" class="tooltip-date"></div>
+        <div id="operational-msg" class="operational-msg" style="display: none">
+          Operational
+        </div>
+        <div id="outage-fields" class="flex flex-col">
+          <div
+            id="tooltip-outage-major"
+            class="outage-field"
+            style="display: none"
+          >
+            <span class="outage-label">
+              <span id="tooltip-icon-major" class="w-4 h-4"></span>
+              <span class="outage-status-text text-[var(--color-red)]"
+                >Major Outage</span
+              >
+            </span>
+            <span class="outage-duration">
+              <span class="value-hrs"></span>
+              <span class="value-mins"></span>
+            </span>
+          </div>
+          <div
+            id="tooltip-outage-partial"
+            class="outage-field"
+            style="display: none"
+          >
+            <span class="outage-label">
+              <span id="tooltip-icon-partial" class="w-4 h-4"></span>
+              <span class="outage-status-text text-[var(--color-orange)]"
+                >Partial Outage</span
+              >
+            </span>
+            <span class="outage-duration">
+              <span class="value-hrs"></span>
+              <span class="value-mins"></span>
+            </span>
+          </div>
+          <div
+            id="tooltip-outage-degraded"
+            class="outage-field"
+            style="display: none"
+          >
+            <span class="outage-label">
+              <span id="tooltip-icon-degraded" class="w-4 h-4"></span>
+              <span class="outage-status-text text-[var(--color-yellow)]"
+                >Degraded Performance</span
+              >
+            </span>
+            <span class="outage-duration">
+              <span class="value-hrs"></span>
+              <span class="value-mins"></span>
+            </span>
+          </div>
+          <div
+            id="tooltip-outage-maintenance"
+            class="outage-field"
+            style="display: none"
+          >
+            <span class="outage-label">
+              <span id="tooltip-icon-maintenance" class="w-4 h-4"></span>
+              <span class="outage-status-text text-[var(--color-blue)]"
+                >Maintenance</span
+              >
+            </span>
+            <span class="outage-duration">
+              <span class="value-hrs"></span>
+              <span class="value-mins"></span>
+            </span>
+          </div>
+        </div>
+        <div id="no-outages-msg" class="no-outages-msg" style="display: none">
+          No downtime recorded on this day.
+        </div>
+        <div id="related-events-section" class="mt-2" style="display: none">
+          <div class="related-header inline-block mr-2">Related:</div>
+          <ul id="related-events-list" class="inline-block"></ul>
+          <div id="no-related-msg" class="no-related-msg inline-block" style="display: none">
+            No incidents or maintenance related to this downtime.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const tooltip = document.getElementById("tooltip");
+      const tooltipDate = document.getElementById("tooltip-date");
+      const operationalMsg = document.getElementById("operational-msg");
+      const outageFieldsContainer = document.getElementById("outage-fields");
+      const noOutagesMsg = document.getElementById("no-outages-msg");
+      const relatedEventsSection = document.getElementById(
+        "related-events-section"
+      );
+      const relatedEventsList = document.getElementById("related-events-list");
+      const noRelatedMsg = document.getElementById("no-related-msg");
+      const outageMajorField = document.getElementById("tooltip-outage-major");
+      const outagePartialField = document.getElementById(
+        "tooltip-outage-partial"
+      );
+      const outageDegradedField = document.getElementById(
+        "tooltip-outage-degraded"
+      );
+      const outageMaintenanceField = document.getElementById(
+        "tooltip-outage-maintenance"
+      );
+      const statusBars = document.querySelectorAll(".status-bar");
+
+      function formatDuration(durationString) {
+        if (!durationString) return { hours: 0, minutes: 0 };
+        let hours = 0;
+        let minutes = 0;
+        const hourMatch = durationString.match(/(\d+)\s*hr/);
+        const minMatch = durationString.match(/(\d+)\s*min/);
+        if (hourMatch) hours = parseInt(hourMatch[1], 10);
+        if (minMatch) minutes = parseInt(minMatch[1], 10);
+        return { hours, minutes };
+      }
+
+      function setOutageField(fieldElement, iconElementId, iconSvg, duration) {
+        const { hours, minutes } = formatDuration(duration);
+        const hrsSpan = fieldElement.querySelector(".value-hrs");
+        const minsSpan = fieldElement.querySelector(".value-mins");
+        const iconSpan = document.getElementById(iconElementId);
+        hrsSpan.textContent =
+          hours > 0 ? `${hours} hr${hours > 1 ? "s" : ""}` : "";
+        minsSpan.textContent =
+          minutes > 0 ? `${minutes} min${minutes > 1 ? "s" : ""}` : "";
+        if (hrsSpan.textContent && minsSpan.textContent)
+          hrsSpan.textContent += " ";
+        iconSpan.innerHTML = iconSvg;
+        fieldElement.style.display = "flex";
+      }
+
+      function resetTooltipFields() {
+        outageMajorField.style.display = "none";
+        outagePartialField.style.display = "none";
+        outageDegradedField.style.display = "none";
+        outageMaintenanceField.style.display = "none";
+        operationalMsg.style.display = "none";
+        noOutagesMsg.style.display = "none";
+        relatedEventsSection.style.display = "none";
+        relatedEventsList.innerHTML = "";
+        noRelatedMsg.style.display = "none";
+      }
+
+      statusBars.forEach((bar) => {
+        bar.addEventListener("mouseenter", (event) => {
+          const date = bar.dataset.date;
+          const type = bar.dataset.type;
+          const duration = bar.dataset.duration;
+          const related = bar.dataset.related;
+          const status = bar.dataset.status;
+
+          resetTooltipFields();
+          tooltipDate.textContent = date;
+
+          let outageExists = false;
+          if (status === "operational") {
+            operationalMsg.style.display = "block";
+          } else if (status === "outage") {
+            setOutageField(
+              outageMajorField,
+              "tooltip-icon-major",
+              `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>`,
+              duration
+            );
+            outageExists = true;
+          } else if (status === "partial") {
+            setOutageField(
+              outagePartialField,
+              "tooltip-icon-partial",
+              `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>`,
+              duration
+            );
+            outageExists = true;
+          } else if (status === "degraded") {
+            setOutageField(
+              outageDegradedField,
+              "tooltip-icon-degraded",
+              `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/><path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/></svg>`,
+              duration
+            );
+            outageExists = true;
+          } else if (status === "maintenance") {
+            setOutageField(
+              outageMaintenanceField,
+              "tooltip-icon-maintenance",
+              `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 16 16"><path d="M.102 1.555a1 1 0 0 1 1.414 0L8 7.293l6.484-5.738a1 1 0 1 1 1.415 1.414L9.414 8l6.485 5.738a1 1 0 1 1-1.415 1.414L8 8.707l-6.484 5.738a1 1 0 1 1-1.414-1.414L6.586 8 .102 2.969a1 1 0 0 1 0-1.414z"/></svg>`,
+              duration
+            );
+            outageExists = true;
+          }
+
+          if (!outageExists && status !== "operational") {
+            noOutagesMsg.style.display = "block";
+          }
+
+          if (related) {
+            relatedEventsSection.style.display = "block";
+            const listItem = document.createElement("li");
+            listItem.className = "inline-block";
+            listItem.innerHTML = `<a href="#" class="related-event-link">${related}</a>`;
+            relatedEventsList.appendChild(listItem);
+          } else if (outageExists) {
+            relatedEventsSection.style.display = "block";
+            noRelatedMsg.style.display = "inline-block";
+          }
+
+          const barRect = bar.getBoundingClientRect();
+          tooltip.style.display = "block";
+          tooltip.style.visibility = "hidden";
+          const tooltipHeight = tooltip.offsetHeight;
+          const tooltipWidth = tooltip.offsetWidth;
+          tooltip.style.visibility = "visible";
+
+          let top = barRect.top + window.scrollY - tooltipHeight - 10;
+          let left =
+            barRect.left +
+            window.scrollX +
+            barRect.width / 2 -
+            tooltipWidth / 2;
+
+          if (left < 5) left = 5;
+          const rightEdge = window.innerWidth - tooltipWidth - 5;
+          if (left > rightEdge) left = rightEdge;
+
+          const arrow = tooltip.querySelector(".tooltip-arrow");
+          if (top < window.scrollY + 5) {
+            top = barRect.bottom + window.scrollY + 10;
+            arrow.classList.remove("arrow-down");
+            arrow.classList.add("arrow-up");
+          } else {
+            arrow.classList.remove("arrow-up");
+            arrow.classList.add("arrow-down");
+          }
+
+          tooltip.style.top = `${top}px`;
+          tooltip.style.left = `${left}px`;
+          tooltip.classList.remove("hidden");
+        });
+
+        bar.addEventListener("mouseleave", () => {
+          setTimeout(() => {
+            if (!tooltip.matches(":hover")) {
+              tooltip.classList.add("hidden");
+            }
+          }, 100);
+        });
+      });
+
+      tooltip.addEventListener("mouseleave", () => {
+        tooltip.classList.add("hidden");
+      });
+
+      document.addEventListener("click", (event) => {
+        if (
+          !tooltip.contains(event.target) &&
+          !event.target.closest(".status-bar")
+        ) {
+          tooltip.classList.add("hidden");
+        }
+      });
+    </script>
+  </body>
+</html>

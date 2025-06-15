@@ -211,8 +211,16 @@ interface FileInfo {
           </div>
         </div>
 
+        <!-- Loading State -->
+        <div class="loading-state" *ngIf="isLoading">
+          <div class="loading-spinner">
+            <i class="pi pi-spin pi-spinner"></i>
+          </div>
+          <span>正在加载文件...</span>
+        </div>
+
         <!-- Enhanced Files Grid -->
-        <div class="files-grid" *ngIf="displayedFiles.length > 0">
+        <div class="files-grid" *ngIf="!isLoading && displayedFiles.length > 0">
           <div class="file-card"
                *ngFor="let file of displayedFiles"
                (click)="navigateToDetails(file)"
@@ -308,7 +316,7 @@ interface FileInfo {
         </div>
 
         <!-- Empty State -->
-        <div class="empty-state" *ngIf="displayedFiles.length === 0">
+        <div class="empty-state" *ngIf="!isLoading && displayedFiles.length === 0">
           <div class="empty-icon">
             <i class="fa-solid fa-inbox"></i>
           </div>
@@ -510,15 +518,31 @@ interface FileInfo {
       height: 48px !important;
       width: 48px !important;
       border-radius: var(--border-radius-lg) !important;
-      background: var(--surface-b) !important;
-      border: 1px solid var(--border-color) !important;
+      background: var(--surface-a) !important;
+      border: 2px solid var(--border-color) !important;
       transition: all 0.2s ease !important;
+      color: var(--text-color) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-toggle-btn:hover {
+      border-color: var(--primary-color) !important;
+      background: var(--primary-color-light) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
     .filter-toggle-btn.active {
       background: var(--primary-color) !important;
       border-color: var(--primary-color) !important;
       color: white !important;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    .filter-toggle-btn.active:hover {
+      background: #5046e5 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(99, 102, 241, 0.4);
     }
 
     .trending-section {
@@ -891,6 +915,34 @@ interface FileInfo {
       border-color: var(--primary-color-light);
     }
 
+    /* Loading State */
+    .loading-state {
+      text-align: center;
+      padding: var(--spacing-12) var(--spacing-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-spinner {
+      font-size: 3rem;
+      color: var(--primary-color);
+      margin-bottom: var(--spacing-4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading-state span {
+      color: var(--text-color-secondary);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-medium);
+    }
+
     /* Empty State */
     .empty-state {
       text-align: center;
@@ -977,10 +1029,6 @@ interface FileInfo {
       margin-right: var(--spacing-1);
     }
 
-
-
-
-
     /* Responsive Design */
     @media (max-width: 768px) {
       .home-container {
@@ -1055,6 +1103,7 @@ export class HomeComponent implements OnInit {
   selectedTag: string = '';
   isDragOver: boolean = false;
   fileInfos: FileInfo[] = [];
+  isLoading: boolean = true;
 
   // New search and filter properties
   showFilters: boolean = false;
@@ -1086,8 +1135,6 @@ export class HomeComponent implements OnInit {
 
   @ViewChild('fileInput') fileInput!: any;
 
-
-
   constructor(
     private htmlFileService: HtmlFileService,
     private messageService: MessageService,
@@ -1098,8 +1145,23 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadData();
-    this.setupFilterOptions();
+    this.isLoading = true;
+    // 先从服务器刷新文件列表，然后加载数据
+    this.htmlFileService.refreshFiles().subscribe({
+      next: (files) => {
+        console.log('Files refreshed from server:', files);
+        this.loadData();
+        this.setupFilterOptions();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Failed to refresh files from server:', error);
+        // 即使服务器请求失败，也尝试从本地存储加载数据
+        this.loadData();
+        this.setupFilterOptions();
+        this.isLoading = false;
+      }
+    });
   }
 
   private loadData(): void {
@@ -1403,6 +1465,14 @@ export class HomeComponent implements OnInit {
         type: file.type,
         file: file
       }));
+
+      // 默认使用第一个文件名（去掉扩展名）作为title
+      if (this.fileInfos.length > 0) {
+        const firstFileName = this.fileInfos[0].name;
+        const nameWithoutExtension = firstFileName.substring(0, firstFileName.lastIndexOf('.')) || firstFileName;
+        this.uploadForm.title = nameWithoutExtension;
+      }
+
       this.showUploadDialog = true;
       event.target.value = '';
     }
@@ -1424,6 +1494,13 @@ export class HomeComponent implements OnInit {
     const totalFiles = files.length;
 
     for (const file of files) {
+      // 如果没有设置标题，使用文件名（去掉扩展名）
+      let title = this.uploadForm.title;
+      if (!title || title.trim() === '') {
+        const nameWithoutExtension = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+        title = nameWithoutExtension;
+      }
+
       this.htmlFileService.uploadFile(
         file,
         this.uploadForm.category,
@@ -1431,6 +1508,7 @@ export class HomeComponent implements OnInit {
         this.uploadForm.description
       ).subscribe({
         next: (response) => {
+          console.log('Upload successful:', response);
           uploadCount++;
 
           if (uploadCount === totalFiles) {
@@ -1440,11 +1518,26 @@ export class HomeComponent implements OnInit {
               detail: this.i18n.t('fileUploaded')
             });
 
-            this.loadData();
+            // 等待刷新完成后再更新UI
+            this.htmlFileService.refreshFiles().subscribe({
+              next: (files) => {
+                console.log('Files refreshed successfully:', files);
+                this.loadData();
+                this.filterFiles();
+              },
+              error: (error) => {
+                console.error('Failed to refresh files:', error);
+                // 即使刷新失败，也尝试重新加载本地数据
+                this.loadData();
+                this.filterFiles();
+              }
+            });
+
             this.closeUploadDialog();
           }
         },
         error: (error) => {
+          console.error('Upload error:', error);
           this.messageService.add({
             severity: 'error',
             summary: this.i18n.t('error'),
@@ -1491,7 +1584,21 @@ export class HomeComponent implements OnInit {
           summary: this.i18n.t('success'),
           detail: this.i18n.t('fileDeleted')
         });
-        this.loadData();
+
+        // 刷新文件列表
+        this.htmlFileService.refreshFiles().subscribe({
+          next: (files) => {
+            console.log('Files refreshed after deletion:', files);
+            this.loadData();
+            this.filterFiles();
+          },
+          error: (error) => {
+            console.error('Failed to refresh files after deletion:', error);
+            // 即使刷新失败，也尝试重新加载本地数据
+            this.loadData();
+            this.filterFiles();
+          }
+        });
       },
       error: (error) => {
         this.messageService.add({
@@ -1525,6 +1632,14 @@ export class HomeComponent implements OnInit {
         type: file.type,
         file: file
       }));
+
+      // 默认使用第一个文件名（去掉扩展名）作为title
+      if (this.fileInfos.length > 0) {
+        const firstFileName = this.fileInfos[0].name;
+        const nameWithoutExtension = firstFileName.substring(0, firstFileName.lastIndexOf('.')) || firstFileName;
+        this.uploadForm.title = nameWithoutExtension;
+      }
+
       this.showUploadDialog = true;
     }
   }

@@ -1,40 +1,63 @@
-# HTML Card Viewer
+# HTMLfolio
 
-一个现代化的HTML文件管理和预览工具，支持文件上传、分类管理和在线预览。
+**English** | [简体中文](./README_zh.md)
 
-## 🚀 功能特性
+A modern HTML file management and preview tool designed for developers and designers. It provides an elegant interface to centrally manage all your HTML files, supporting powerful features like file uploads, instant previews, category and tag management, a multi-language UI, and version history.
 
-- ✅ HTML文件上传和管理
-- ✅ 文件分类和标签系统
-- ✅ 在线预览功能
-- ✅ 响应式设计
-- ✅ Docker容器化部署
-- ✅ 健康检查监控
-- ✅ 数据持久化存储
+![HTMLfolio UI](screenshot/en_interface.png)
 
-## 📋 技术栈
+## 🚀 Features
 
-- **前端**: Angular 19 + PrimeNG
-- **后端**: Go + Gin
-- **存储**: 文件存储 (JSON)
-- **部署**: Docker + Docker Compose
+### UI & UX
+- ✅ Elegant light and dark themes
+- ✅ Responsive design for various devices
+- ✅ Internationalization support (Chinese/English)
 
-## 🛠️ 快速开始
+### Core Features
+- ✅ HTML file upload and management
+- ✅ Instant online preview
+- ✅ File categorization and tagging system
+- ✅ Full-text search and multi-dimensional filtering
+- ✅ Version history tracking for HTML files
 
-### 前提条件
+### Deployment & Maintenance
+- ✅ One-click Docker containerized deployment
+- ✅ Health check monitoring endpoint
+- ✅ Persistent data storage
+
+## 📸 Feature Preview
+
+| Feature | Screenshot |
+| :--- | :--- |
+| **File Preview** | <img src="screenshot/preview.png" alt="File Preview" width="700"/> |
+| **Elegant Dark Mode** | <img src="screenshot/dark_interface.png" alt="Dark Mode" width="700"/> |
+| **Clean Chinese Interface** | <img src="screenshot/zh_interface.png" alt="Chinese Interface" width="700"/> |
+| **Powerful Filtering & Search** | <img src="screenshot/filter&search.png" alt="Filtering & Search" width="700"/> |
+| **HTML Version Management** | <img src="screenshot/version_control_for_html.png" alt="Version Management" width="700"/> |
+
+## 📋 Tech Stack
+
+- **Frontend**: Angular 19 + PrimeNG
+- **Backend**: Go + Gin
+- **Storage**: File Storage (JSON)
+- **Deployment**: Docker + Docker Compose
+
+## 🛠️ Quick Start
+
+### Prerequisites
 
 - Docker Desktop
 - Git
 
-### 一键部署
+### One-Click Deployment
 
-1. **克隆项目**
+1. **Clone the project**
    ```bash
-   git clone <repository-url>
-   cd 20250522
+   git clone https://github.com/wangyaxings/HTMLfolio
+   cd HTMLfolio
    ```
 
-2. **运行部署脚本**
+2. **Run the deployment script**
 
    **Windows:**
    ```bash
@@ -46,100 +69,99 @@
    docker-compose -f docker-compose-lite.yml up --build -d
    ```
 
-3. **访问应用**
+3. **Access the application**
 
-   打开浏览器访问: http://localhost:8080
+   Open your browser and go to: http://localhost:8080
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 20250522/
-├── Dockerfile                    # Docker镜像构建文件
-├── docker-compose.yml          # 完整版部署配置
-├── docker-compose-lite.yml     # 轻量级部署配置
-├── deploy.bat                   # Windows部署脚本
-├── env.example                  # 环境变量示例
-├── init-db.sql                  # 数据库初始化脚本
-├── go-backend/                  # Go后端代码
-├── primeng-frontend/            # Angular前端代码
-└── data/                        # 数据持久化目录
-    ├── uploads/                 # 上传文件
-    ├── db/                      # 数据库文件
-    └── backups/                 # 备份文件
+├── Dockerfile                    # Docker build file
+├── docker-compose-lite.yml     # Lightweight deployment configuration
+├── deploy.bat                   # Windows deployment script
+├── env.example                  # Environment variable example
+├── go-backend/                  # Go backend code
+├── primeng-frontend/            # Angular frontend code
+└── data/                        # Data persistence directory
+    ├── uploads/                 # Uploaded files
+    ├── db/                      # Database files
+    └── backups/                 # Backup files
 ```
 
-## 🔧 管理命令
+## 🔧 Management Commands
 
-### 查看服务状态
+### Check service status
 ```bash
 docker ps
 ```
 
-### 查看日志
+### View logs
 ```bash
 docker logs -f 20250522-app-1
 ```
 
-### 停止服务
+### Stop services
 ```bash
 docker-compose -f docker-compose-lite.yml down
 ```
 
-### 重启服务
+### Restart services
 ```bash
 docker-compose -f docker-compose-lite.yml restart
 ```
 
-### 完全重新部署
+### Complete redeployment
 ```bash
 docker-compose -f docker-compose-lite.yml down -v
 docker-compose -f docker-compose-lite.yml up --build -d
 ```
 
-## 🌐 API端点
+## 🌐 API Endpoints
 
-- **健康检查**: `GET /api/health`
-- **文件列表**: `GET /api/files`
-- **上传文件**: `POST /api/upload`
-- **删除文件**: `DELETE /api/files/{filename}`
-- **分类列表**: `GET /api/categories`
+- **Health Check**: `GET /api/health`
+- **List Files**: `GET /api/files`
+- **Upload File**: `POST /api/upload`
+- **Delete File**: `DELETE /api/files/{filename}`
+- **List Categories**: `GET /api/categories`
 
-## 📝 使用说明
+## 📝 Usage Instructions
 
-1. 访问 http://localhost:8080 打开应用
-2. 点击上传区域或拖拽HTML文件进行上传
-3. 填写文件信息（标题、描述、分类、标签）
-4. 上传完成后可在主页查看和预览文件
-5. 支持按分类、标签筛选和搜索文件
+1. Visit http://localhost:8080 to open the HTMLfolio application.
+2. Click the upload area or drag and drop an HTML file to upload.
+3. The system will automatically use the filename (without the extension) as the title.
+4. Fill in the file information (description, category, tags).
+5. After upload, the file will appear on the interface immediately.
+6. Supports filtering and searching by category and tags.
 
-## 🔍 故障排除
+## 🔍 Troubleshooting
 
-### 端口被占用
+### Port is already in use
 ```bash
-# 查看占用8080端口的进程
+# Find the process using port 8080
 netstat -ano | findstr :8080
 
-# 终止占用进程（替换PID）
+# Terminate the process (replace <PID>)
 taskkill /PID <PID> /F
 ```
 
-### 容器启动失败
+### Container fails to start
 ```bash
-# 查看容器日志
+# Check container logs
 docker logs 20250522-app-1
 
-# 重新构建镜像
+# Rebuild the image
 docker-compose -f docker-compose-lite.yml up --build -d
 ```
 
-## 📄 许可证
+## 📄 License
 
 MIT License
 
-## 👨‍💻 作者
+## 👨‍💻 Author
 
 wangyaxings
 
 ---
 
-**部署完成后访问 http://localhost:8080 开始使用！** 🎉
+**After deployment, visit http://localhost:8080 to start using HTMLfolio!** 🎉

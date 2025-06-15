@@ -1,32 +1,44 @@
 [
   {
-    "id": "9d2a068f-6bbf-4dae-ba18-0a6445ce9356",
-    "filename": "代码重构提示词生成工具.html",
-    "title": "代码重构提示词生成工具",
+    "id": "014f8af3-844d-4cfe-ab6e-a8ac067bce43",
+    "filename": "config-ui.html",
+    "title": "config-ui",
+    "description": "configuration ui inspired by cursor",
+    "category": "other",
+    "tags": null,
+    "author": "",
+    "version": "",
+    "fileSize": 78324,
+    "uploadDate": "2025-06-15T15:30:26.203313114Z",
+    "path": "/uploads/config-ui.html",
+    "hasHistory": false
+  },
+  {
+    "id": "60d5251b-c87f-4c10-8db0-aa4a3bb5911b",
+    "filename": "index.html",
+    "title": "index",
     "description": "",
     "category": "other",
     "tags": null,
     "author": "",
     "version": "",
-    "fileSize": 25916,
-    "uploadDate": "2025-05-24T14:03:57.578519866Z",
-    "path": "/uploads/代码重构提示词生成工具.html",
+    "fileSize": 41130,
+    "uploadDate": "2025-06-15T15:29:01.509354369Z",
+    "path": "/uploads/index.html",
     "hasHistory": false
   },
   {
-    "id": "6c53b2f9-a316-4c1f-851a-245b69997910",
-    "filename": "PromptDetailCard.html",
-    "title": "PromptDetailCard",
-    "description": "889",
-    "category": "dashboard",
-    "tags": [
-      "88+"
-    ],
+    "id": "71a97e6a-1fcf-4c0a-bcb4-219ba294af4c",
+    "filename": "open_source_license_tracker.html",
+    "title": "open_source_license_tracker",
+    "description": "oss list",
+    "category": "other",
+    "tags": null,
     "author": "",
     "version": "",
-    "fileSize": 33734,
-    "uploadDate": "2025-05-24T14:03:12.124368444Z",
-    "path": "/uploads/PromptDetailCard.html",
+    "fileSize": 41052,
+    "uploadDate": "2025-06-15T15:28:22.74742087Z",
+    "path": "/uploads/open_source_license_tracker.html",
     "hasHistory": false
   }
 ]

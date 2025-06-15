@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统一配置管理界面</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            max-width: 1600px;
+            min-width: 1000px;
+            height: calc(100vh - 40px);
+            background: #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #2a2a2a 0%, #252525 100%);
+            border-right: 1px solid #333;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid #333;
+            background: #2a2a2a;
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-header .subtitle {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .tab-nav {
+            padding: 20px 0;
+        }
+
+        .tab-item {
+            padding: 14px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #ccc;
+            border-left: 3px solid transparent;
+        }
+
+        .tab-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .tab-item.active {
+            background: rgba(129, 161, 193, 0.1);
+            color: #81a1c1;
+            border-left-color: #81a1c1;
+            font-weight: 500;
+        }
+
+        .tab-item .icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px;
+            border-top: 1px solid #333;
+        }
+
+        .footer-item {
+            padding: 8px 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 30px 40px 20px;
+            border-bottom: 1px solid #333;
+            background: #1a1a1a;
+        }
+
+        .content-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .content-description {
+            font-size: 14px;
+            color: #999;
+            line-height: 1.5;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px 40px;
+        }
+
+        /* Tab页面内容 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 设置项样式 */
+        .section {
+            background: linear-gradient(135deg, #242424 0%, #222 100%);
+            padding: 28px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #333;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #fff;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #404040;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title .icon {
+            font-size: 16px;
+            color: #81a1c1;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #404040;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+            max-width: 60%;
+        }
+
+        .setting-info h3 {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-info p {
+            font-size: 13px;
+            color: #999;
+            line-height: 1.6;
+        }
+
+        .setting-control {
+            display: flex;
+            justify-content: flex-end;
+            min-width: 200px;
+        }
+
+        /* 控件样式 */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #555;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #81a1c1, #5e81ac);
+            border-color: #81a1c1;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(129, 161, 193, 0.2);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(145deg, #fff, #f0f0f0);
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(22px);
+            background: linear-gradient(145deg, #fff, #f8f8f8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch:hover {
+            transform: scale(1.02);
+        }
+
+        .toggle-switch:active {
+            transform: scale(0.98);
+        }
+
+        .input-field {
+            background: linear-gradient(145deg, #3a3a3a, #333);
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #e0e0e0;
+            font-size: 14px;
+            min-width: 180px;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #81a1c1;
+            background: linear-gradient(145deg, #404040, #383838);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(129, 161, 193, 0.1);
+        }
+
+        .input-field:hover:not(:focus) {
+            border-color: #666;
+            background: linear-gradient(145deg, #404040, #383838);
+        }
+
+        .input-field[type="password"] {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .input-field.number {
+            min-width: 120px;
+            padding-right: 28px;
+        }
+
+        /* 数字输入框的 spinner 按钮样式 */
+        .input-field[type="number"]::-webkit-outer-spin-button,
+        .input-field[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* 为数字输入框添加自定义 spinner */
+        .number-input-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .number-spinner {
+            position: absolute;
+            right: 2px;
+            top: 2px;
+            bottom: 2px;
+            width: 20px;
+            display: flex;
+            flex-direction: column;
+            background: #444;
+            border-radius: 0 6px 6px 0;
+            border-left: 1px solid #555;
+        }
+
+        .number-spinner-btn {
+            flex: 1;
+            background: #444;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .number-spinner-btn:first-child {
+            border-radius: 0 6px 0 0;
+            border-bottom: 1px solid #555;
+        }
+
+        .number-spinner-btn:last-child {
+            border-radius: 0 0 6px 0;
+        }
+
+        .number-spinner-btn:hover {
+            background: #81a1c1;
+            color: #fff;
+        }
+
+        .number-spinner-btn:active {
+            background: #5e81ac;
+            transform: scale(0.95);
+        }
+
+        .dropdown {
+            position: relative;
+            min-width: 140px;
+        }
+
+        .dropdown-button {
+            background: linear-gradient(145deg, #3a3a3a, #333);
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 10px 36px 10px 14px;
+            color: #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .dropdown-button::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 12px;
+            color: #81a1c1;
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-button:hover {
+            background: linear-gradient(145deg, #404040, #383838);
+            border-color: #81a1c1;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(129, 161, 193, 0.1);
+        }
+
+        .dropdown.open .dropdown-button {
+            border-color: #81a1c1;
+            background: linear-gradient(145deg, #404040, #383838);
+        }
+
+        .dropdown.open .dropdown-button::after {
+            transform: rotate(180deg);
+            color: #fff;
+        }
+
+        /* 下拉菜单列表样式 */
+        .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            margin-top: 4px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .dropdown.open .dropdown-list {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            color: #ccc;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #404040;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(129, 161, 193, 0.1);
+            color: #81a1c1;
+        }
+
+        .dropdown-item.selected {
+            background: rgba(129, 161, 193, 0.2);
+            color: #81a1c1;
+            font-weight: 500;
+        }
+
+        /* 徽章样式 */
+        .beta-badge {
+            background: linear-gradient(135deg, #4a4a4a 0%, #555 100%);
+            color: #ccc;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            margin-left: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 1px solid #666;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid;
+        }
+
+        .status-badge.online {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+            color: #4caf50;
+            border-color: rgba(76, 175, 80, 0.3);
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+        }
+
+        .status-badge.offline {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(244, 67, 54, 0.1));
+            color: #f44336;
+            border-color: rgba(244, 67, 54, 0.3);
+            box-shadow: 0 0 8px rgba(244, 67, 54, 0.2);
+        }
+
+        /* 数组容器样式 */
+        .array-container {
+            background: linear-gradient(145deg, #2a2a2a, #252525);
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #444;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .array-item {
+            background: linear-gradient(145deg, #333, #2a2a2a);
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border-left: 3px solid #81a1c1;
+            border: 1px solid #404040;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .array-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .array-item:hover {
+            background: linear-gradient(145deg, #383838, #2f2f2f);
+            border-color: #81a1c1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .array-item-content {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .array-item-content strong {
+            color: #81a1c1;
+            font-weight: 600;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .main-container {
+                min-width: 800px;
+            }
+            .sidebar {
+                width: 240px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 10px;
+            }
+            .main-container {
+                min-width: auto;
+                height: calc(100vh - 20px);
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+                flex-direction: column;
+            }
+            .tab-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 10px;
+            }
+            .tab-item {
+                white-space: nowrap;
+                padding: 10px 16px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+            .tab-item.active {
+                border-left: none;
+                border-bottom-color: #81a1c1;
+            }
+            .content-body {
+                padding: 20px;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* 动画效果 */
+        .section {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 操作按钮样式 */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            padding: 20px 0;
+            border-top: 1px solid #333;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #81a1c1 0%, #5e81ac 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(129, 161, 193, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5e81ac 0%, #4c566a 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(129, 161, 193, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(129, 161, 193, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(145deg, #3a3a3a, #333);
+            color: #ccc;
+            border: 1px solid #555;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(145deg, #444, #383838);
+            color: #fff;
+            border-color: #666;
+            transform: translateY(-1px);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 成功消息样式 */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .success-message.show {
+            transform: translateX(0);
+        }
+
+        /* 连接状态指示器增强 */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-indicator.connected {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .status-indicator.disconnected {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .status-indicator.warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 工具提示样式 */
+        .tooltip {
+            position: relative;
+            cursor: help;
+            color: #81a1c1;
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #333;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 1001;
+            margin-bottom: -1px;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #333, #2a2a2a);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            margin-bottom: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+        }
+
+        .tooltip:hover::before,
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* 搜索功能样式 */
+        .search-container {
+            padding: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .search-input {
+            width: 100%;
+            background: linear-gradient(145deg, #3a3a3a, #333);
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 10px 40px 10px 14px;
+            color: #e0e0e0;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #81a1c1;
+            background: linear-gradient(145deg, #404040, #383838);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(129, 161, 193, 0.1);
+        }
+
+        .search-input:hover:not(:focus) {
+            border-color: #666;
+            background: linear-gradient(145deg, #404040, #383838);
+        }
+
+        .search-input::placeholder {
+            color: #888;
+            font-style: italic;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #81a1c1;
+            pointer-events: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>配置管理中心</h1>
+                <div class="subtitle">系统配置与管理</div>
+            </div>
+
+            <!-- 搜索功能 -->
+            <div class="search-container">
+                <div style="position: relative;">
+                    <input type="text" class="search-input" placeholder="搜索设置项..." id="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+
+            <nav class="tab-nav">
+                <div class="tab-item active" data-tab="chat">
+                    <div class="icon"><i class="fas fa-comments"></i></div>
+                    <span>聊天设置</span>
+                </div>
+                <div class="tab-item" data-tab="dragent">
+                    <div class="icon"><i class="fas fa-robot"></i></div>
+                    <span>数据收集代理</span>
+                    <div class="status-indicator connected">
+                        <div class="status-dot"></div>
+                        在线
+                    </div>
+                </div>
+                <div class="tab-item" data-tab="relayserver">
+                    <div class="icon"><i class="fas fa-server"></i></div>
+                    <span>中继服务器</span>
+                    <div class="status-indicator connected">
+                        <div class="status-dot"></div>
+                        在线
+                    </div>
+                </div>
+                <div class="tab-item" data-tab="datasample">
+                    <div class="icon"><i class="fas fa-database"></i></div>
+                    <span>数据样本</span>
+                </div>
+                <div class="tab-item" data-tab="gemini">
+                    <div class="icon"><i class="fas fa-gem"></i></div>
+                    <span>Gemini配置</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="footer-item">版本: v2.1.0</div>
+                <div class="footer-item">最后更新: 2024-01-15</div>
+                <div class="footer-item tooltip" data-tooltip="点击查看系统信息">
+                    <i class="fas fa-info-circle"></i> 系统状态: 正常
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <div class="content-header">
+                <h1 class="content-title" id="page-title">聊天设置</h1>
+                <p class="content-description" id="page-description">配置聊天功能的各项参数和行为设置</p>
+            </div>
+
+            <div class="content-body">
+                <!-- 聊天设置页面 -->
+                <div class="tab-content active" id="chat-content">
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-cog icon"></i>
+                            基本设置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>默认模式 <i class="fas fa-question-circle tooltip" data-tooltip="选择新聊天时的默认运行模式"></i></h3>
+                                <p>新聊天时使用的默认模式</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="dropdown">
+                                    <div class="dropdown-button">智能代理</div>
+                                    <div class="dropdown-list">
+                                        <div class="dropdown-item selected">智能代理</div>
+                                        <div class="dropdown-item">基础助手</div>
+                                        <div class="dropdown-item">专业模式</div>
+                                        <div class="dropdown-item">创意模式</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>文本大小</h3>
+                                <p>调整聊天消息的文本大小</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="dropdown">
+                                    <div class="dropdown-button">默认</div>
+                                    <div class="dropdown-list">
+                                        <div class="dropdown-item">小</div>
+                                        <div class="dropdown-item selected">默认</div>
+                                        <div class="dropdown-item">大</div>
+                                        <div class="dropdown-item">特大</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>自动清除聊天</h3>
+                                <p>在闲置一段时间后，自动打开新的聊天窗口</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>滚动到新消息</h3>
+                                <p>自动滚动到接收的新消息</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>完成提示音</h3>
+                                <p>当AI助手完成回复时播放提示音</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>自定义模式 <span class="beta-badge">Beta</span></h3>
+                                <p>创建具有特定模型、工具、快捷键和指令的自定义模式</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-alt icon"></i>
+                            上下文设置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>包含完整文件夹上下文</h3>
+                                <p>允许在上下文中包含选定文件夹的完整内容</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>包含项目结构 <span class="beta-badge">Beta</span></h3>
+                                <p>包含简化的目录树作为上下文</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>网络搜索工具</h3>
+                                <p>允许AI助手搜索网络获取相关信息</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="saveAllSettings()">
+                            <i class="fas fa-save"></i>
+                            保存所有设置
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetSettings()">
+                            <i class="fas fa-undo"></i>
+                            重置为默认
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 数据收集代理页面 -->
+                <div class="tab-content" id="dragent-content">
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-info-circle icon"></i>
+                            基本信息
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>组件标识</h3>
+                                <p>数据收集代理的唯一标识符</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="dragent_A1" id="dragent-ciid">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>状态</h3>
+                                <p>当前运行状态</p>
+                            </div>
+                            <div class="setting-control">
+                                <span class="status-badge online">在线</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-hdd icon"></i>
+                            存储配置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>驱动器盘符</h3>
+                                <p>数据存储的驱动器位置</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="D:" id="dragent-drive">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>工作目录</h3>
+                                <p>数据处理和临时文件的工作目录</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="D:\\temp\\ssh2srv-main\\dragent" id="dragent-workdir">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>数据库路径</h3>
+                                <p>本地SQLite数据库文件的完整路径</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="D:\\temp\\Database\\dragent.db" id="dragent-db">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-clock icon"></i>
+                            时间配置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>数据收集间隔（秒）</h3>
+                                <p>定期收集系统数据的时间间隔</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="5" id="dragent-interval" min="1" max="3600">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('dragent-interval')">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('dragent-interval')">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>上传间隔（秒）</h3>
+                                <p>向上级服务器上传数据的时间间隔</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="30" id="dragent-upload-interval" min="1" max="86400">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('dragent-upload-interval')">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('dragent-upload-interval')">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>已上传数据保留天数</h3>
+                                <p>成功上传后数据的本地保留时间</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="14" id="dragent-uploaded-days" min="1" max="365">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('dragent-uploaded-days')">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('dragent-uploaded-days')">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-network-wired icon"></i>
+                            连接配置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>服务器地址</h3>
+                                <p>上级中继服务器的IP地址</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="192.168.1.100" id="dragent-host">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>服务器端口</h3>
+                                <p>上级中继服务器的端口号</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="28022" id="dragent-port" min="1" max="65535">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('dragent-port')">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('dragent-port')">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>传输协议</h3>
+                                <p>数据传输使用的协议类型</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="dropdown">
+                                    <div class="dropdown-button" id="dragent-protocol">SFTP</div>
+                                    <div class="dropdown-list">
+                                        <div class="dropdown-item selected">SFTP</div>
+                                        <div class="dropdown-item">FTP</div>
+                                        <div class="dropdown-item">HTTP</div>
+                                        <div class="dropdown-item">HTTPS</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="saveAllSettings()">
+                            <i class="fas fa-save"></i>
+                            保存所有设置
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetSettings()">
+                            <i class="fas fa-undo"></i>
+                            重置为默认
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 中继服务器页面 -->
+                <div class="tab-content" id="relayserver-content">
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-info-circle icon"></i>
+                            基本信息
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>组件标识</h3>
+                                <p>中继服务器的唯一标识符</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="relay_B1" id="relay-ciid">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>状态</h3>
+                                <p>当前运行状态</p>
+                            </div>
+                            <div class="setting-control">
+                                <span class="status-badge online">在线</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-hdd icon"></i>
+                            存储配置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>工作目录</h3>
+                                <p>数据处理的工作目录路径</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="C:\\temp\\ssh2srv-main\\relayserver" id="relay-workdir">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>数据库路径</h3>
+                                <p>本地数据库文件的完整路径</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="D:\\temp\\Database\\relayserver.db" id="relay-db">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-arrow-up icon"></i>
+                            上级连接配置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>上级服务器地址</h3>
+                                <p>上级AOMS服务器的IP地址</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="input-field" value="127.0.0.1" id="relay-higher-host">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>上级服务器端口</h3>
+                                <p>上级AOMS服务器的端口号</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="28022" id="relay-higher-port" min="1" max="65535">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('relay-higher-port')">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('relay-higher-port')">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-sitemap icon"></i>
+                            下级代理管理
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>连接的代理列表</h3>
+                                <p>当前连接的下级数据收集代理</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="array-container">
+                                    <div class="array-item">
+                                        <div class="array-item-content">
+                                            <strong>agent-A1-prod</strong><br>
+                                            <span style="color: #999;">IP: 192.168.1.101 | 状态: 在线</span>
+                                        </div>
+                                    </div>
+                                    <div class="array-item">
+                                        <div class="array-item-content">
+                                            <strong>agent-A2-prod</strong><br>
+                                            <span style="color: #999;">IP: 192.168.1.102 | 状态: 在线</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="saveAllSettings()">
+                            <i class="fas fa-save"></i>
+                            保存所有设置
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetSettings()">
+                            <i class="fas fa-undo"></i>
+                            重置为默认
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 数据样本页面 -->
+                <div class="tab-content" id="datasample-content">
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-line icon"></i>
+                            系统监控数据
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>CPU 使用率监控</h3>
+                                <p>启用CPU使用率的实时监控和数据收集</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>内存使用监控</h3>
+                                <p>监控系统内存使用情况和可用内存</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>磁盘使用监控</h3>
+                                <p>监控磁盘空间使用情况和I/O性能</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>网络流量监控</h3>
+                                <p>监控网络接口的上传和下载流量</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-cogs icon"></i>
+                            数据处理配置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>数据压缩</h3>
+                                <p>启用数据压缩以减少存储空间和传输时间</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>数据加密</h3>
+                                <p>对敏感数据进行加密处理</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>异常检测</h3>
+                                <p>自动检测并标记异常数据点</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="saveAllSettings()">
+                            <i class="fas fa-save"></i>
+                            保存所有设置
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetSettings()">
+                            <i class="fas fa-undo"></i>
+                            重置为默认
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gemini配置页面 -->
+                <div class="tab-content" id="gemini-content">
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-key icon"></i>
+                            API 配置
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>API 密钥</h3>
+                                <p>Google Gemini API 的访问密钥</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="password" class="input-field" placeholder="输入 API 密钥" id="gemini-api-key">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>模型版本</h3>
+                                <p>选择要使用的 Gemini 模型版本</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="dropdown">
+                                    <div class="dropdown-button">gemini-pro</div>
+                                    <div class="dropdown-list">
+                                        <div class="dropdown-item selected">gemini-pro</div>
+                                        <div class="dropdown-item">gemini-pro-vision</div>
+                                        <div class="dropdown-item">gemini-1.5-pro</div>
+                                        <div class="dropdown-item">gemini-1.5-flash</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>请求超时（秒）</h3>
+                                <p>API 请求的超时时间设置</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="30" id="gemini-timeout" min="1" max="300">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('gemini-timeout')">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('gemini-timeout')">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-sliders-h icon"></i>
+                            模型参数
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>温度值</h3>
+                                <p>控制生成文本的随机性（0-1）</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="0.7" step="0.1" min="0" max="1" id="gemini-temperature">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('gemini-temperature', 0.1)">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('gemini-temperature', 0.1)">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>最大令牌数</h3>
+                                <p>单次响应的最大令牌数量</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="2048" id="gemini-max-tokens" min="1" max="8192">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('gemini-max-tokens', 256)">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('gemini-max-tokens', 256)">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Top-P 值</h3>
+                                <p>控制候选词汇的概率分布（0-1）</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="number-input-container">
+                                    <input type="number" class="input-field number" value="0.9" step="0.1" min="0" max="1" id="gemini-top-p">
+                                    <div class="number-spinner">
+                                        <button class="number-spinner-btn" onclick="incrementNumber('gemini-top-p', 0.1)">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button class="number-spinner-btn" onclick="decrementNumber('gemini-top-p', 0.1)">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">
+                            <i class="fas fa-shield-alt icon"></i>
+                            安全与隐私
+                        </h2>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>内容过滤</h3>
+                                <p>启用内容安全过滤机制</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>数据本地化</h3>
+                                <p>优先使用本地数据处理</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="saveAllSettings()">
+                            <i class="fas fa-save"></i>
+                            保存所有设置
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetSettings()">
+                            <i class="fas fa-undo"></i>
+                            重置为默认
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功消息提示 -->
+    <div class="success-message" id="success-message">
+        <i class="fas fa-check-circle"></i>
+        配置已成功保存
+    </div>
+
+    <script>
+        // Tab切换功能
+        const tabItems = document.querySelectorAll('.tab-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const pageTitle = document.getElementById('page-title');
+        const pageDescription = document.getElementById('page-description');
+        const searchInput = document.getElementById('search-input');
+
+        // Tab配置信息
+        const tabConfig = {
+            chat: {
+                title: '聊天设置',
+                description: '配置聊天功能的各项参数和行为设置'
+            },
+            dragent: {
+                title: '数据收集代理',
+                description: '配置数据收集代理的运行参数和连接设置'
+            },
+            relayserver: {
+                title: '中继服务器',
+                description: '配置中继服务器的转发规则和连接参数'
+            },
+            datasample: {
+                title: '数据样本',
+                description: '配置数据监控和处理的相关参数'
+            },
+            gemini: {
+                title: 'Gemini配置',
+                description: '配置Google Gemini AI模型的API参数和安全设置'
+            }
+        };
+
+        // 切换tab函数
+        function switchTab(tabName) {
+            // 移除所有活跃状态
+            tabItems.forEach(item => item.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // 激活选中的tab
+            const selectedTab = document.querySelector(`[data-tab="${tabName}"]`);
+            const selectedContent = document.getElementById(`${tabName}-content`);
+
+            if (selectedTab && selectedContent) {
+                selectedTab.classList.add('active');
+                selectedContent.classList.add('active');
+
+                // 更新页面标题和描述
+                const config = tabConfig[tabName];
+                if (config) {
+                    pageTitle.textContent = config.title;
+                    pageDescription.textContent = config.description;
+                }
+            }
+        }
+
+        // 为tab项添加点击事件
+        tabItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tabName = item.getAttribute('data-tab');
+                switchTab(tabName);
+            });
+        });
+
+        // 开关切换功能
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+
+            // 获取设置项名称
+            const settingName = element.closest('.setting-item').querySelector('h3').textContent.trim();
+            const isActive = element.classList.contains('active');
+
+            console.log(`${settingName} 已${isActive ? '启用' : '禁用'}`);
+
+            // 添加视觉反馈
+            element.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 150);
+        }
+
+        // 下拉菜单功能
+        document.querySelectorAll('.dropdown-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+
+                const dropdown = this.closest('.dropdown');
+                const isOpen = dropdown.classList.contains('open');
+
+                // 关闭所有其他下拉菜单
+                document.querySelectorAll('.dropdown.open').forEach(openDropdown => {
+                    openDropdown.classList.remove('open');
+                });
+
+                // 切换当前下拉菜单状态
+                if (!isOpen) {
+                    dropdown.classList.add('open');
+                }
+            });
+        });
+
+        // 处理下拉菜单项点击
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function(event) {
+                event.stopPropagation();
+
+                const dropdown = this.closest('.dropdown');
+                const button = dropdown.querySelector('.dropdown-button');
+                const currentSelected = dropdown.querySelector('.dropdown-item.selected');
+
+                // 更新选中状态
+                if (currentSelected) {
+                    currentSelected.classList.remove('selected');
+                }
+                this.classList.add('selected');
+
+                // 更新按钮文本
+                button.textContent = this.textContent;
+
+                // 关闭下拉菜单
+                dropdown.classList.remove('open');
+
+                // 添加视觉反馈
+                button.style.background = 'linear-gradient(145deg, #4caf50, #45a049)';
+                setTimeout(() => {
+                    button.style.background = '';
+                }, 300);
+
+                console.log('选择:', this.textContent);
+            });
+        });
+
+        // 点击其他地方关闭下拉菜单
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown.open').forEach(dropdown => {
+                dropdown.classList.remove('open');
+            });
+        });
+
+        // 输入框变化事件
+        document.querySelectorAll('.input-field').forEach(input => {
+            input.addEventListener('change', function() {
+                const settingName = this.closest('.setting-item').querySelector('h3').textContent.trim();
+                console.log(`${settingName} 更新为: ${this.value}`);
+
+                // 添加视觉反馈
+                this.style.borderColor = '#4caf50';
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                }, 1000);
+            });
+        });
+
+        // 搜索功能
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const settingItems = document.querySelectorAll('.setting-item');
+
+            settingItems.forEach(item => {
+                const title = item.querySelector('h3').textContent.toLowerCase();
+                const description = item.querySelector('p').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                    // 高亮匹配的文本
+                    if (searchTerm) {
+                        item.style.backgroundColor = 'rgba(129, 161, 193, 0.1)';
+                    } else {
+                        item.style.backgroundColor = '';
+                    }
+                } else {
+                    item.style.display = searchTerm ? 'none' : 'flex';
+                    item.style.backgroundColor = '';
+                }
+            });
+        });
+
+        // 数字输入框增减功能
+        function incrementNumber(inputId, step = 1) {
+            const input = document.getElementById(inputId);
+            const currentValue = parseFloat(input.value) || 0;
+            const max = parseFloat(input.max) || Infinity;
+            const newValue = Math.min(currentValue + step, max);
+
+            input.value = step < 1 ? newValue.toFixed(1) : Math.round(newValue);
+
+            // 触发 change 事件
+            input.dispatchEvent(new Event('change'));
+
+            // 添加视觉反馈
+            const spinner = input.nextElementSibling.querySelector('.number-spinner-btn');
+            if (spinner) {
+                spinner.style.background = '#4caf50';
+                setTimeout(() => {
+                    spinner.style.background = '';
+                }, 200);
+            }
+        }
+
+        function decrementNumber(inputId, step = 1) {
+            const input = document.getElementById(inputId);
+            const currentValue = parseFloat(input.value) || 0;
+            const min = parseFloat(input.min) || -Infinity;
+            const newValue = Math.max(currentValue - step, min);
+
+            input.value = step < 1 ? newValue.toFixed(1) : Math.round(newValue);
+
+            // 触发 change 事件
+            input.dispatchEvent(new Event('change'));
+
+            // 添加视觉反馈
+            const spinner = input.nextElementSibling.querySelector('.number-spinner-btn');
+            if (spinner) {
+                spinner.style.background = '#f44336';
+                setTimeout(() => {
+                    spinner.style.background = '';
+                }, 200);
+            }
+        }
+
+        // 保存所有设置
+        function saveAllSettings() {
+            // 显示成功消息
+            showSuccessMessage('配置已成功保存');
+
+            // 这里应该实现实际的保存逻辑
+            console.log('保存所有设置...');
+
+            // 模拟保存延迟
+            setTimeout(() => {
+                console.log('设置保存完成');
+            }, 1000);
+        }
+
+        // 重置设置
+        function resetSettings() {
+            if (confirm('确定要重置为默认设置吗？这将覆盖所有当前配置。')) {
+                // 重置所有开关为默认状态
+                document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                    toggle.classList.remove('active');
+                });
+
+                // 重置所有输入框为默认值
+                document.querySelectorAll('.input-field').forEach(input => {
+                    if (input.hasAttribute('data-default')) {
+                        input.value = input.getAttribute('data-default');
+                    }
+                });
+
+                showSuccessMessage('设置已重置为默认值');
+                console.log('设置已重置');
+            }
+        }
+
+        // 显示成功消息
+        function showSuccessMessage(message) {
+            const successMessage = document.getElementById('success-message');
+            successMessage.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            successMessage.classList.add('show');
+
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        // 保存配置函数（示例）
+        function saveConfiguration(settingName, value) {
+            // 实际项目中这里应该调用API保存配置
+            console.log('保存配置:', settingName, '=', value);
+        }
+
+        // 加载配置函数（示例）
+        function loadConfiguration() {
+            // 实际项目中这里应该从API加载配置
+            console.log('加载配置...');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfiguration();
+            console.log('配置管理界面初始化完成');
+
+            // 添加键盘快捷键支持
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S 保存
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    saveAllSettings();
+                }
+
+                // Ctrl+R 重置
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    resetSettings();
+                }
+
+                // Ctrl+F 搜索
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
