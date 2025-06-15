@@ -76,7 +76,7 @@ A modern HTML file management and preview tool designed for developers and desig
 ## 📁 Project Structure
 
 ```
-20250522/
+HTMLfolio/
 ├── Dockerfile                    # Docker build file
 ├── docker-compose-lite.yml     # Lightweight deployment configuration
 ├── deploy.bat                   # Windows deployment script
@@ -98,7 +98,7 @@ docker ps
 
 ### View logs
 ```bash
-docker logs -f 20250522-app-1
+docker logs -f <service-name>
 ```
 
 ### Stop services
@@ -148,7 +148,7 @@ taskkill /PID <PID> /F
 ### Container fails to start
 ```bash
 # Check container logs
-docker logs 20250522-app-1
+docker logs <container-name>
 
 # Rebuild the image
 docker-compose -f docker-compose-lite.yml up --build -d
@@ -157,10 +157,6 @@ docker-compose -f docker-compose-lite.yml up --build -d
 ## 📄 License
 
 MIT License
-
-## 👨‍💻 Author
-
-wangyaxings
 
 ---
 

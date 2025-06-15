@@ -76,7 +76,7 @@
 ## 📁 项目结构
 
 ```
-20250522/
+HTMLfolio/
 ├── Dockerfile                    # Docker镜像构建文件
 ├── docker-compose-lite.yml     # 轻量级部署配置
 ├── deploy.bat                   # Windows部署脚本
@@ -98,7 +98,7 @@ docker ps
 
 ### 查看日志
 ```bash
-docker logs -f 20250522-app-1
+docker logs -f <container_name>
 ```
 
 ### 停止服务
@@ -148,7 +148,7 @@ taskkill /PID <PID> /F
 ### 容器启动失败
 ```bash
 # 查看容器日志
-docker logs 20250522-app-1
+docker logs <container_name>
 
 # 重新构建镜像
 docker-compose -f docker-compose-lite.yml up --build -d
@@ -158,9 +158,7 @@ docker-compose -f docker-compose-lite.yml up --build -d
 
 MIT License
 
-## 👨‍💻 作者
 
-wangyaxings
 
 ---
 
